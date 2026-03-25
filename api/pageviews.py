@@ -7,8 +7,19 @@ from http.server import BaseHTTPRequestHandler
 import json
 import urllib.request
 
-KV_URL = os.environ.get("KV_REST_API_URL", "")
-KV_TOKEN = os.environ.get("KV_REST_API_TOKEN", "")
+# Vercel Redis / KV 환경변수 (여러 이름 패턴 대응)
+KV_URL = (
+    os.environ.get("KV_REST_API_URL")
+    or os.environ.get("UPSTASH_REDIS_REST_URL")
+    or os.environ.get("KV_URL")
+    or ""
+)
+KV_TOKEN = (
+    os.environ.get("KV_REST_API_TOKEN")
+    or os.environ.get("UPSTASH_REDIS_REST_TOKEN")
+    or os.environ.get("KV_REST_API_READ_ONLY_TOKEN")
+    or ""
+)
 
 
 class handler(BaseHTTPRequestHandler):
