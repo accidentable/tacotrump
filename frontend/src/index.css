@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg-primary: #FAFBFC;
+  --color-bg-card: #FFFFFF;
+  --color-bg-card-hover: #F5F6F8;
+  --color-bg-header: #1B2A4A;
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #4A5568;
+  --color-text-muted: #8899A6;
+  --color-border: #E2E8F0;
+  --color-border-strong: #CBD5E1;
+  --color-safe: #16A34A;
+  --color-caution: #D97706;
+  --color-warning: #EA580C;
+  --color-danger: #DC2626;
+  --color-accent: #1B2A4A;
+  --color-accent-light: #2E4A7A;
+
+  --font-sans: 'Pretendard', 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100svh;
+}
+
+/* Gauge animation */
+@keyframes gauge-fill {
+  from { width: 0%; }
+}
+
+.gauge-animated {
+  animation: gauge-fill 0.8s ease-out;
+}
