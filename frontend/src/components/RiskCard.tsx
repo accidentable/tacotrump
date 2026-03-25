@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { HelpCircle, X } from 'lucide-react';
 import type { RiskData } from '../utils/riskCalculator';
 import GaugeBar from './GaugeBar';
 import { RISK_LEVELS } from '../utils/constants';
@@ -8,7 +9,6 @@ interface RiskCardProps {
   loading: boolean;
 }
 
-// 레벨별 이미지 목록 — 파일 추가 시 여기에 추가만 하면 됨
 const LEVEL_IMAGES: Record<number, string[]> = {
   1: ['/level1_1.png', '/level1_2.png'],
   2: ['/level2_1.png', '/level2_2.png'],
@@ -16,14 +16,21 @@ const LEVEL_IMAGES: Record<number, string[]> = {
   4: ['/level4_1.png', '/level4_2.png'],
 };
 
+const LEVEL_INFO = [
+  { lv: 1, label: '안전', color: '#16A34A', desc: '시장 안정. 트럼프 자신감 충전 중. 새로운 사고를 칠 확률이 높은 구간.' },
+  { lv: 2, label: '주의', color: '#D97706', desc: '시장이 버티는 중. 추가 강경책 가능성 있음.' },
+  { lv: 3, label: '경고', color: '#EA580C', desc: '시장 흔들리는 중. 슬슬 꼬리 내릴 준비.' },
+  { lv: 4, label: '위험', color: '#DC2626', desc: '시장 패닉. 정책 번복 임박.' },
+];
+
 function pickRandom(arr: string[]): string {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
 export default function RiskCard({ risk, loading }: RiskCardProps) {
   const [imgSrc, setImgSrc] = useState('');
+  const [showHelp, setShowHelp] = useState(false);
 
-  // 레벨이 바뀌거나 컴포넌트 마운트 시 랜덤 선택
   useEffect(() => {
     if (!risk) return;
     const images = LEVEL_IMAGES[risk.level] || LEVEL_IMAGES[1];
@@ -43,22 +50,28 @@ export default function RiskCard({ risk, loading }: RiskCardProps) {
 
   return (
     <div
-      className="bg-bg-card border rounded-lg overflow-hidden max-w-sm mx-auto"
+      className="bg-bg-card border rounded-lg overflow-hidden max-w-sm mx-auto relative"
       style={{ borderColor: level.border }}
     >
       {/* 상단 색상 바 */}
       <div className="h-1.5" style={{ backgroundColor: level.color }} />
 
-      {/* 정보 영역 (이미지 위) */}
+      {/* 정보 영역 */}
       <div className="p-4">
         <div className="flex items-baseline justify-between mb-3">
-          <div className="flex items-baseline gap-1.5">
+          <div className="flex items-center gap-1.5">
             <span className="text-2xl font-bold tabular-nums" style={{ color: level.color }}>
               Lv.{risk.level}
             </span>
             <span className="text-base font-semibold" style={{ color: level.color }}>
               {level.label}
             </span>
+            <button
+              onClick={() => setShowHelp(!showHelp)}
+              className="text-text-muted hover:text-text-primary transition-colors ml-0.5"
+            >
+              <HelpCircle className="w-4 h-4" />
+            </button>
           </div>
           <span className="text-xs text-text-muted">
             <span className="font-semibold text-text-primary">{risk.total_score.toFixed(1)}</span> / {risk.max_score.toFixed(1)}
@@ -71,6 +84,32 @@ export default function RiskCard({ risk, loading }: RiskCardProps) {
           {risk.description}
         </p>
       </div>
+
+      {/* 레벨 설명 패널 */}
+      {showHelp && (
+        <div className="border-t border-border bg-bg-primary px-4 py-3">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-semibold text-text-primary">레벨 기준</span>
+            <button onClick={() => setShowHelp(false)} className="text-text-muted hover:text-text-primary">
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+          <div className="space-y-1.5">
+            {LEVEL_INFO.map(info => (
+              <div
+                key={info.lv}
+                className="flex gap-2 items-start text-xs"
+                style={{ opacity: info.lv === risk.level ? 1 : 0.55 }}
+              >
+                <span className="font-bold shrink-0 w-12" style={{ color: info.color }}>
+                  Lv.{info.lv} {info.label}
+                </span>
+                <span className="text-text-secondary">{info.desc}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* 이미지 */}
       <div style={{ backgroundColor: level.bg }}>
