@@ -1,4 +1,9 @@
+import { Eye } from 'lucide-react';
+import { usePageViews } from '../hooks/usePageViews';
+
 export default function Footer() {
+  const views = usePageViews();
+
   return (
     <footer className="mt-auto bg-bg-header text-white/60">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-5">
@@ -10,8 +15,14 @@ export default function Footer() {
         </p>
         <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/10">
           <span className="text-[10px]">
-            SweetTACO &copy; 2025
+            tacotrump &copy; 2026
           </span>
+          {views !== null && views > 0 && (
+            <span className="flex items-center gap-1 text-[10px] text-white/50">
+              <Eye size={12} />
+              {views.toLocaleString()}
+            </span>
+          )}
           <a
             href="https://www.threads.com/@findawesomething"
             target="_blank"

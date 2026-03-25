@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import Header from './components/Header';
 import RiskCard from './components/RiskCard';
 import IndicatorGrid from './components/IndicatorGrid';
@@ -33,6 +34,7 @@ export default function App() {
       </main>
 
       <Footer />
+      <Analytics />
     </div>
   );
 }
