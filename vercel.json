@@ -3,6 +3,9 @@
   "outputDirectory": "frontend/dist",
   "framework": null,
   "ignoreCommand": "exit 0",
+  "functions": {
+    "api/truths.py": { "maxDuration": 60 }
+  },
   "rewrites": [
     { "source": "/api/:path*", "destination": "/api/:path*" }
   ]

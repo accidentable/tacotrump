@@ -1,4 +1,5 @@
 import { TrendingUp, TrendingDown, Minus, Landmark, Fuel, DollarSign, Users, BarChart3 } from 'lucide-react';
+
 import type { IndicatorData } from '../utils/riskCalculator';
 import { calculateGaugePercent, getGaugeColor } from '../utils/riskCalculator';
 import GaugeBar from './GaugeBar';
@@ -36,7 +37,7 @@ export default function IndicatorCard({ indicator }: IndicatorCardProps) {
   const ChangeIcon = isPositive ? TrendingUp : isNegative ? TrendingDown : Minus;
 
   const gaugePercent = redline != null
-    ? calculateGaugePercent(value, redline, redline_direction)
+    ? calculateGaugePercent(value, redline, redline_direction, key)
     : score * 100;
 
   const gaugeColor = getGaugeColor(gaugePercent);

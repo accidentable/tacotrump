@@ -32,7 +32,7 @@ export default function RiskCard({ risk, loading }: RiskCardProps) {
 
   if (loading || !risk) {
     return (
-      <div className="bg-bg-card border border-border rounded-lg p-6 animate-pulse max-w-md mx-auto">
+      <div className="bg-bg-card border border-border rounded-lg p-6 animate-pulse max-w-sm mx-auto">
         <div className="h-80 bg-bg-card-hover rounded" />
       </div>
     );
@@ -43,22 +43,13 @@ export default function RiskCard({ risk, loading }: RiskCardProps) {
 
   return (
     <div
-      className="bg-bg-card border rounded-lg overflow-hidden max-w-md mx-auto"
+      className="bg-bg-card border rounded-lg overflow-hidden max-w-sm mx-auto"
       style={{ borderColor: level.border }}
     >
       {/* 상단 색상 바 */}
       <div className="h-1.5" style={{ backgroundColor: level.color }} />
 
-      {/* 이미지 */}
-      <div style={{ backgroundColor: level.bg }}>
-        <img
-          src={imgSrc}
-          alt={`Level ${risk.level}`}
-          className="w-full object-cover"
-        />
-      </div>
-
-      {/* 하단 정보 영역 */}
+      {/* 정보 영역 (이미지 위) */}
       <div className="p-4">
         <div className="flex items-baseline justify-between mb-3">
           <div className="flex items-baseline gap-1.5">
@@ -76,9 +67,18 @@ export default function RiskCard({ risk, loading }: RiskCardProps) {
 
         <GaugeBar percent={gaugePercent} height={6} />
 
-        <p className="text-xs text-text-secondary leading-relaxed mt-3">
+        <p className="text-sm font-bold text-text-primary leading-snug mt-3">
           {risk.description}
         </p>
+      </div>
+
+      {/* 이미지 */}
+      <div style={{ backgroundColor: level.bg }}>
+        <img
+          src={imgSrc}
+          alt={`Level ${risk.level}`}
+          className="w-full object-cover"
+        />
       </div>
     </div>
   );

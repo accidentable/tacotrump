@@ -12,6 +12,14 @@ export default function Footer() {
           <span className="text-[10px]">
             SweetTACO &copy; 2025
           </span>
+          <a
+            href="https://www.threads.com/@findawesomething"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[10px] text-white/80 hover:text-white transition-colors"
+          >
+            @findawesomething
+          </a>
           <span className="text-[10px]">
             Not affiliated with any government entity.
           </span>

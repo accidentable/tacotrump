@@ -102,7 +102,7 @@ export default function HistoryTimeline({ history, loading }: HistoryTimelinePro
 function formatTimestamp(iso: string): string {
   try {
     const d = new Date(iso);
-    return d.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+    return `${d.getMonth() + 1}/${d.getDate()}`;
   } catch {
     return '';
   }

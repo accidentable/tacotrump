@@ -1,30 +1,37 @@
-import asyncio
-import json
-from datetime import datetime
+"""GET /api/indicators — 모든 지표 데이터 반환"""
+
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 from http.server import BaseHTTPRequestHandler
-from _shared import fetch_all, build_indicator
+import json
+import asyncio
+from _shared import fetch_all, build_indicator, CORE_KEYS
+from datetime import datetime, timezone, timedelta
 
-
-CORE_KEYS = ["sp500", "treasury_10y", "oil", "dollar_index"]
-EXTENDED_KEYS = ["gasoline", "treasury_30y", "russell2000", "approval_rating"]
+KST = timezone(timedelta(hours=9))
 
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
-        data, _, _ = asyncio.run(fetch_all())
+        try:
+            data, total, risk = asyncio.run(fetch_all())
 
-        core = [x for k in CORE_KEYS if (x := build_indicator(k, data, True))]
-        extended = [x for k in EXTENDED_KEYS if (x := build_indicator(k, data, False))]
+            core = [build_indicator(k, data, True) for k in CORE_KEYS]
+            core = [c for c in core if c]
+            extended = []
 
-        body = json.dumps({
-            "core": core,
-            "extended": extended,
-            "updated_at": datetime.now().isoformat(),
-        })
+            now = datetime.now(KST).strftime("%Y-%m-%d %H:%M KST")
 
-        self.send_response(200)
-        self.send_header("Content-Type", "application/json")
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Cache-Control", "s-maxage=30, stale-while-revalidate=60")
-        self.end_headers()
-        self.wfile.write(body.encode())
+            body = json.dumps({"core": core, "extended": extended, "updated_at": now}, ensure_ascii=False)
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.send_header("Cache-Control", "s-maxage=30, stale-while-revalidate=60")
+            self.end_headers()
+            self.wfile.write(body.encode())
+        except Exception as e:
+            self.send_response(500)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps({"error": str(e)}).encode())

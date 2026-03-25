@@ -31,27 +31,27 @@ export interface HistoryEntry {
   dollar_index?: number;
 }
 
+// safe zone 기준 — 백엔드와 동일
+const SAFE_ZONES: Record<string, number> = {
+  sp500: -3, treasury_10y: 4.0, oil: 75, dollar_index: 97, approval_rating: 50,
+};
+
 export function calculateGaugePercent(
   value: number,
   redline: number,
-  direction: 'above' | 'below'
+  direction: 'above' | 'below',
+  key?: string
 ): number {
+  const safe = key && SAFE_ZONES[key] != null ? SAFE_ZONES[key] : (direction === 'above' ? redline * 0.6 : 50);
+
   if (direction === 'above') {
-    const safe = redline * 0.6;
     if (value <= safe) return 0;
     if (value >= redline) return 100;
     return ((value - safe) / (redline - safe)) * 100;
   } else {
-    if (redline < 0) {
-      if (value >= 0) return 0;
-      if (value <= redline) return 100;
-      return (Math.abs(value) / Math.abs(redline)) * 100;
-    } else {
-      const safe = 55;
-      if (value >= safe) return 0;
-      if (value <= redline) return 100;
-      return ((safe - value) / (safe - redline)) * 100;
-    }
+    if (value >= safe) return 0;
+    if (value <= redline) return 100;
+    return ((safe - value) / (safe - redline)) * 100;
   }
 }
 

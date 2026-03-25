@@ -10,10 +10,8 @@ import httpx
 TICKERS = {
     "treasury_10y": "^TNX",
     "sp500": "^GSPC",
-    "oil": "BZ=F",
+    "oil": "CL=F",
     "dollar_index": "DX-Y.NYB",
-    "treasury_30y": "^TYX",
-    "russell2000": "^RUT",
 }
 
 HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
@@ -28,7 +26,7 @@ async def _fetch_ticker(client, key, ticker):
         current = meta["regularMarketPrice"]
         prev_close = meta.get("chartPreviousClose") or meta.get("previousClose") or current
 
-        if key in ("sp500", "russell2000"):
+        if key == "sp500":
             high_52w = meta.get("fiftyTwoWeekHigh", current)
             pct = ((current - high_52w) / high_52w) * 100
             prev_pct = ((prev_close - high_52w) / high_52w) * 100
@@ -55,35 +53,9 @@ async def fetch_yahoo():
 YAHOO_FALLBACK = {
     "treasury_10y": {"value": 4.25, "prev_value": 4.22},
     "sp500": {"value": -3.5, "raw_value": 5650.0, "prev_value": -3.2, "high_52w": 5856.0},
-    "oil": {"value": 72.50, "prev_value": 73.10},
-    "dollar_index": {"value": 104.20, "prev_value": 104.05},
-    "treasury_30y": {"value": 4.55, "prev_value": 4.52},
-    "russell2000": {"value": -8.5, "raw_value": 2050.0, "prev_value": -8.2, "high_52w": 2240.0},
+    "oil": {"value": 68.50, "prev_value": 69.10},
+    "dollar_index": {"value": 99.20, "prev_value": 99.05},
 }
-
-# ── FRED (gasoline) ────────────────────────────────────────────
-
-async def fetch_gasoline():
-    api_key = os.getenv("FRED_API_KEY")
-    if not api_key:
-        return {"value": 3.45, "prev_value": 3.42}
-    try:
-        from datetime import datetime, timedelta
-        end = datetime.now().strftime("%Y-%m-%d")
-        start = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
-        async with httpx.AsyncClient(timeout=8.0) as client:
-            r = await client.get("https://api.stlouisfed.org/fred/series/observations",
-                                 params={"series_id": "GASREGW", "api_key": api_key,
-                                         "file_type": "json", "observation_start": start,
-                                         "observation_end": end, "sort_order": "desc", "limit": 2})
-            obs = r.json().get("observations", [])
-            if obs:
-                cur = float(obs[0]["value"])
-                prev = float(obs[1]["value"]) if len(obs) > 1 else cur
-                return {"value": round(cur, 3), "prev_value": round(prev, 3)}
-    except Exception:
-        pass
-    return {"value": 3.45, "prev_value": 3.42}
 
 # ── Approval (RCP) ─────────────────────────────────────────────
 
@@ -110,25 +82,22 @@ async def fetch_approval():
 
 # ── Score Engine ───────────────────────────────────────────────
 
+# safe: 이 값 이하면 0점, redline: 이 값 이상이면 1점
 REDLINES = {
-    "sp500": {"value": -20.0, "direction": "below"},
-    "treasury_10y": {"value": 5.0, "direction": "above"},
-    "oil": {"value": 120.0, "direction": "above"},
-    "dollar_index": {"value": 115.0, "direction": "above"},
-    "gasoline": {"value": 4.0, "direction": "above"},
-    "treasury_30y": {"value": 5.5, "direction": "above"},
-    "russell2000": {"value": -25.0, "direction": "below"},
-    "approval_rating": {"value": 35.0, "direction": "below"},
+    "sp500":          {"value": -15.0, "direction": "below", "safe": -3.0},
+    "treasury_10y":   {"value": 4.5,   "direction": "above", "safe": 4.0},
+    "oil":            {"value": 100.0, "direction": "above", "safe": 75.0},
+    "dollar_index":   {"value": 110.0, "direction": "above", "safe": 97.0},
+    "approval_rating":{"value": 35.0,  "direction": "below", "safe": 50.0},
 }
+
+CORE_KEYS = ["sp500", "treasury_10y", "oil", "dollar_index", "approval_rating"]
 
 INDICATOR_LABELS = {
     "sp500": {"label": "S&P 500 (고점대비)", "unit": "%"},
     "treasury_10y": {"label": "10년물 국채금리", "unit": "%"},
-    "oil": {"label": "유가 (브렌트)", "unit": "$/bbl"},
+    "oil": {"label": "유가 (WTI)", "unit": "$/bbl"},
     "dollar_index": {"label": "달러 인덱스", "unit": ""},
-    "gasoline": {"label": "전국 평균 휘발유", "unit": "$/gal"},
-    "treasury_30y": {"label": "30년물 국채금리", "unit": "%"},
-    "russell2000": {"label": "Russell 2000 (고점대비)", "unit": "%"},
     "approval_rating": {"label": "대통령 지지율", "unit": "%"},
 }
 
@@ -137,19 +106,22 @@ def calc_indicator_score(key, value):
     info = REDLINES.get(key)
     if not info:
         return 0.0
-    rl, d = info["value"], info["direction"]
+    rl = info["value"]
+    d = info["direction"]
+    safe = info["safe"]
+
     if d == "above":
-        safe = rl * 0.6
         if value <= safe: return 0.0
         if value >= rl: return 1.0
         return (value - safe) / (rl - safe)
     else:
         if rl < 0:
-            if value >= 0: return 0.0
+            # S&P 500: safe=-5, redline=-20
+            if value >= safe: return 0.0
             if value <= rl: return 1.0
-            return abs(value) / abs(rl)
+            return (safe - value) / (safe - rl)
         else:
-            safe = 55.0
+            # 지지율: safe=50, redline=35
             if value >= safe: return 0.0
             if value <= rl: return 1.0
             return (safe - value) / (safe - rl)
@@ -157,38 +129,39 @@ def calc_indicator_score(key, value):
 
 def calc_total(core_values):
     s = 0.0
-    for k in ("sp500", "treasury_10y", "oil", "dollar_index"):
+    for k in CORE_KEYS:
         if k in core_values:
             s += calc_indicator_score(k, core_values[k])
     return round(s, 2)
 
 
 def get_risk(score):
-    if score < 1.0:
+    # max = 5.0 (5개 지표)
+    if score < 1.5:
         return {"level": 1, "label": "안전", "color": "#16A34A",
-                "description": "경제 지표가 안정적입니다. 트럼프가 자신감을 갖고 강경책을 밀어붙일 가능성이 높습니다. 추가 관세·규제 등 새로운 사고를 칠 확률이 높은 구간입니다."}
+                "description": "시장 안정. 자신감 충전 중. 사고칠 확률 높음."}
     if score < 2.5:
         return {"level": 2, "label": "주의", "color": "#D97706",
-                "description": "시장이 아직 버티고 있어 트럼프가 추가 강경책을 꺼낼 여지가 있습니다. 새로운 정책 도발 가능성에 주의하세요."}
+                "description": "시장이 버티는 중. 한 방 더 올 수 있음."}
     if score < 3.5:
         return {"level": 3, "label": "경고", "color": "#EA580C",
-                "description": "다수 지표가 레드라인에 근접합니다. 정책 번복 가능성이 높아지고 있습니다."}
+                "description": "시장 흔들리는 중. 슬슬 꼬리 내릴 준비."}
     return {"level": 4, "label": "위험", "color": "#DC2626",
-            "description": "레드라인 초과 지표 다수. 정책 번복이 임박했을 수 있습니다."}
+            "description": "시장 패닉. 번복 임박."}
 
 
 # ── 통합 fetch ─────────────────────────────────────────────────
 
 async def fetch_all():
-    yahoo, gas, approval = await asyncio.gather(
-        fetch_yahoo(), fetch_gasoline(), fetch_approval(),
+    yahoo, approval = await asyncio.gather(
+        fetch_yahoo(), fetch_approval(),
     )
     if not yahoo:
         yahoo = YAHOO_FALLBACK
 
-    data = {**yahoo, "gasoline": gas, "approval_rating": approval}
+    data = {**yahoo, "approval_rating": approval}
 
-    core_values = {k: data[k]["value"] for k in ("sp500", "treasury_10y", "oil", "dollar_index") if k in data}
+    core_values = {k: data[k]["value"] for k in CORE_KEYS if k in data}
     total = calc_total(core_values)
     risk = get_risk(total)
 

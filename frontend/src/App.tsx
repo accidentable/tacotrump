@@ -2,16 +2,18 @@ import { useCallback } from 'react';
 import Header from './components/Header';
 import RiskCard from './components/RiskCard';
 import IndicatorGrid from './components/IndicatorGrid';
-import ExtendedIndicators from './components/ExtendedIndicators';
 import HistoryTimeline from './components/HistoryTimeline';
+import TruthFeed from './components/TruthFeed';
 import Footer from './components/Footer';
 import { useIndicators, useRiskLevel, useHistory } from './hooks/useIndicators';
+import { useTruths } from './hooks/useTruths';
 import { useWebSocket } from './hooks/useWebSocket';
 
 export default function App() {
-  const { core, extended, updatedAt, loading: indLoading, refetch } = useIndicators();
+  const { core, updatedAt, loading: indLoading, refetch } = useIndicators();
   const { risk, loading: riskLoading, refetch: refetchRisk } = useRiskLevel();
-  const { history, loading: histLoading } = useHistory();
+  const { history, loading: histLoading } = useHistory(7);
+  const { posts: truths, loading: truthsLoading } = useTruths();
 
   const handleWSMessage = useCallback(() => {
     refetch();
@@ -25,13 +27,12 @@ export default function App() {
       <Header
         riskLevel={risk?.level ?? 1}
         updatedAt={updatedAt}
-        wsConnected={connected}
       />
 
       <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 py-6 space-y-6">
         <RiskCard risk={risk} loading={riskLoading} />
         <IndicatorGrid indicators={core} loading={indLoading} />
-        <ExtendedIndicators indicators={extended} />
+        <TruthFeed posts={truths} loading={truthsLoading} />
         <HistoryTimeline history={history} loading={histLoading} />
       </main>
 
