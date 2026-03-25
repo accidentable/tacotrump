@@ -2,7 +2,6 @@
   "buildCommand": "cd frontend && npm install && npm run build",
   "outputDirectory": "frontend/dist",
   "framework": null,
-  "ignoreCommand": "exit 0",
   "functions": {
     "api/truths.py": { "maxDuration": 60 }
   },
