@@ -14,7 +14,7 @@ export function useIndicators(pollInterval = 60000) {
   const [updatedAt, setUpdatedAt] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const retryRef = useRef<ReturnType<typeof setTimeout>>();
+  const retryRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const fetchData = useCallback(async () => {
     try {
@@ -61,7 +61,7 @@ export function useIndicators(pollInterval = 60000) {
 export function useRiskLevel() {
   const [risk, setRisk] = useState<RiskData | null>(null);
   const [loading, setLoading] = useState(true);
-  const retryRef = useRef<ReturnType<typeof setTimeout>>();
+  const retryRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const fetchRisk = useCallback(async () => {
     try {

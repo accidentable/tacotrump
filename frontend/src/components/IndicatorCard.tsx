@@ -26,7 +26,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 export default function IndicatorCard({ indicator }: IndicatorCardProps) {
-  const { key, label, value, change, change_pct, unit, redline, redline_direction, score } = indicator;
+  const { key, label, value, change, unit, redline, redline_direction, score } = indicator;
 
   const Icon = ICON_MAP[key] || BarChart3;
 
