@@ -20,9 +20,6 @@ export default function Footer() {
           >
             @findawesomething
           </a>
-          <span className="text-[10px]">
-            Not affiliated with any government entity.
-          </span>
         </div>
       </div>
     </footer>
