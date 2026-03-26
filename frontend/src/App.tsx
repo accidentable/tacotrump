@@ -3,6 +3,7 @@ import { Analytics } from '@vercel/analytics/react';
 import Header from './components/Header';
 import RiskCard from './components/RiskCard';
 import IndicatorGrid from './components/IndicatorGrid';
+import ShareButton from './components/ShareButton';
 import HistoryTimeline from './components/HistoryTimeline';
 import Footer from './components/Footer';
 import { useIndicators, useRiskLevel, useHistory } from './hooks/useIndicators';
@@ -30,6 +31,7 @@ export default function App() {
       <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 py-6 space-y-6">
         <RiskCard risk={risk} loading={riskLoading} />
         <IndicatorGrid indicators={core} loading={indLoading} />
+        <ShareButton riskLevel={risk?.level ?? 1} label={risk?.label ?? '안전'} />
         <HistoryTimeline history={history} loading={histLoading} />
       </main>
 

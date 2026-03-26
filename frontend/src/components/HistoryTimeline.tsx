@@ -102,8 +102,8 @@ export default function HistoryTimeline({ history, loading }: HistoryTimelinePro
                 tickLine={{ stroke: c.axis }}
               />
               <YAxis
-                domain={[0, 4]}
-                ticks={[0, 1, 2, 3, 4]}
+                domain={[0, 3]}
+                ticks={[0, 1, 2, 3]}
                 tick={{ fill: c.tick, fontSize: 11 }}
                 axisLine={{ stroke: c.axis }}
                 tickLine={{ stroke: c.axis }}
@@ -122,7 +122,6 @@ export default function HistoryTimeline({ history, loading }: HistoryTimelinePro
               />
               <ReferenceLine y={1} stroke={RISK_LEVELS[1].color} strokeDasharray="5 5" strokeOpacity={0.4} />
               <ReferenceLine y={2} stroke={RISK_LEVELS[2].color} strokeDasharray="5 5" strokeOpacity={0.4} />
-              <ReferenceLine y={3} stroke={RISK_LEVELS[3].color} strokeDasharray="5 5" strokeOpacity={0.4} />
               <Line
                 type="monotone"
                 dataKey="score"

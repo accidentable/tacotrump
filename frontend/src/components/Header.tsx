@@ -1,6 +1,17 @@
 import { useState, useEffect } from 'react';
-import { Clock, Sun, Moon, Share2 } from 'lucide-react';
+import { Clock, Sun, Moon, Bell, BellOff } from 'lucide-react';
 import { RISK_LEVELS } from '../utils/constants';
+
+const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || '';
+
+function urlBase64ToUint8Array(base64String: string) {
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const raw = window.atob(base64);
+  const arr = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
+  return arr;
+}
 
 interface HeaderProps {
   riskLevel: number;
@@ -12,7 +23,10 @@ export default function Header({ riskLevel, updatedAt }: HeaderProps) {
   const [isDark, setIsDark] = useState(() =>
     document.documentElement.classList.contains('dark')
   );
-  const [copied, setCopied] = useState(false);
+  const [pushEnabled, setPushEnabled] = useState(() =>
+    localStorage.getItem('push_enabled') === 'true'
+  );
+  const [pushLoading, setPushLoading] = useState(false);
 
   useEffect(() => {
     if (isDark) {
@@ -24,29 +38,57 @@ export default function Header({ riskLevel, updatedAt }: HeaderProps) {
     }
   }, [isDark]);
 
-  const handleShare = async () => {
-    const shareData = {
-      title: '타코알리미 – Trump Always Chickens Out',
-      text: `현재 타코 지수: Lv.${riskLevel} ${level.label}`,
-      url: 'https://tacotrump.space',
-    };
+  const handlePushToggle = async () => {
+    if (pushLoading) return;
+    setPushLoading(true);
 
-    if (navigator.share) {
-      try {
-        await navigator.share(shareData);
-      } catch {
-        // User cancelled or share failed
+    try {
+      if (pushEnabled) {
+        // Unsubscribe
+        const reg = await navigator.serviceWorker.ready;
+        const sub = await reg.pushManager.getSubscription();
+        if (sub) {
+          await fetch('/api/push-subscribe', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(sub.toJSON()),
+          });
+          await sub.unsubscribe();
+        }
+        localStorage.removeItem('push_enabled');
+        setPushEnabled(false);
+      } else {
+        // Subscribe
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') {
+          setPushLoading(false);
+          return;
+        }
+
+        const reg = await navigator.serviceWorker.ready;
+        const sub = await reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+        });
+
+        await fetch('/api/push-subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(sub.toJSON()),
+        });
+
+        localStorage.setItem('push_enabled', 'true');
+        setPushEnabled(true);
       }
-    } else {
-      await navigator.clipboard.writeText(shareData.url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Push toggle failed:', err);
+    } finally {
+      setPushLoading(false);
     }
   };
 
   const formatTime = (s: string) => {
     if (!s || s === 'N/A') return '--:--';
-    // KST 제거하고 시간만 표시
     if (s.includes('KST')) return s.replace(' KST', '').trim();
     try {
       const d = new Date(s);
@@ -56,6 +98,8 @@ export default function Header({ riskLevel, updatedAt }: HeaderProps) {
       return s;
     }
   };
+
+  const pushSupported = 'serviceWorker' in navigator && 'PushManager' in window && VAPID_PUBLIC_KEY;
 
   return (
     <header className="bg-bg-header text-white">
@@ -106,20 +150,18 @@ export default function Header({ riskLevel, updatedAt }: HeaderProps) {
               >
                 {isDark ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
               </button>
-              <div className="relative">
+              {pushSupported && (
                 <button
-                  onClick={handleShare}
-                  className="p-1 rounded hover:bg-white/10 text-white/60 hover:text-white/90 transition-colors"
-                  aria-label="공유하기"
+                  onClick={handlePushToggle}
+                  disabled={pushLoading}
+                  className="p-1 rounded hover:bg-white/10 text-white/60 hover:text-white/90 transition-colors disabled:opacity-50"
+                  aria-label={pushEnabled ? '알림 해제' : '알림 켜기'}
                 >
-                  <Share2 className="w-3.5 h-3.5" />
+                  {pushEnabled
+                    ? <Bell className="w-3.5 h-3.5" />
+                    : <BellOff className="w-3.5 h-3.5" />}
                 </button>
-                {copied && (
-                  <div className="absolute right-0 top-full mt-1 px-2 py-1 bg-black/80 text-white text-[10px] rounded whitespace-nowrap z-50">
-                    복사됨!
-                  </div>
-                )}
-              </div>
+              )}
             </div>
           </div>
         </div>
