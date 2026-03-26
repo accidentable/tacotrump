@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://sweet-taco.vercel.app/sitemap.xml
+Sitemap: https://tacotrump.space/sitemap.xml
