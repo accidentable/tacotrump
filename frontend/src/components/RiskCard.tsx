@@ -17,10 +17,10 @@ const ALL_IMAGES = [
 ];
 
 const LEVEL_INFO = [
-  { lv: 1, label: '안전', color: '#16A34A', desc: '시장 안정. 트럼프 자신감 충전 중. 새로운 사고를 칠 확률이 높은 구간.' },
-  { lv: 2, label: '주의', color: '#D97706', desc: '시장이 버티는 중. 추가 강경책 가능성 있음.' },
-  { lv: 3, label: '경고', color: '#EA580C', desc: '시장 흔들리는 중. 슬슬 꼬리 내릴 준비.' },
-  { lv: 4, label: '위험', color: '#DC2626', desc: '시장 패닉. 정책 번복 임박.' },
+  { lv: 1, label: '안전', color: '#16A34A', range: '0.0 – 1.4', desc: '시장 안정. 트럼프 자신감 충전 중. 새로운 사고를 칠 확률이 높은 구간.' },
+  { lv: 2, label: '주의', color: '#D97706', range: '1.5 – 2.4', desc: '시장이 버티는 중. 추가 강경책 가능성 있음.' },
+  { lv: 3, label: '경고', color: '#EA580C', range: '2.5 – 3.4', desc: '시장 흔들리는 중. 슬슬 꼬리 내릴 준비.' },
+  { lv: 4, label: '위험', color: '#DC2626', range: '3.5 – 5.0', desc: '시장 패닉. 정책 번복 임박.' },
 ];
 
 function pickRandom(arr: string[]): string {
@@ -77,7 +77,7 @@ export default function RiskCard({ risk, loading }: RiskCardProps) {
               {showHelp && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setShowHelp(false)} />
-                  <div className="absolute left-1/2 -translate-x-1/2 top-8 z-50 w-64 bg-bg-card border border-border rounded-lg shadow-lg p-3 animate-in">
+                  <div className="absolute left-1/2 -translate-x-1/2 top-8 z-50 w-72 bg-bg-card border border-border rounded-lg shadow-lg p-3 animate-in">
                     {/* 말풍선 꼬리 */}
                     <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-3 h-3 bg-bg-card border-l border-t border-border rotate-45" />
                     <div className="flex items-center justify-between mb-2">
@@ -93,9 +93,12 @@ export default function RiskCard({ risk, loading }: RiskCardProps) {
                           className="flex gap-2 items-start text-xs"
                           style={{ opacity: info.lv === risk.level ? 1 : 0.55 }}
                         >
-                          <span className="font-bold shrink-0 w-12" style={{ color: info.color }}>
-                            Lv.{info.lv} {info.label}
-                          </span>
+                          <div className="shrink-0 w-20">
+                            <span className="font-bold" style={{ color: info.color }}>
+                              Lv.{info.lv} {info.label}
+                            </span>
+                            <span className="block text-[10px] text-text-muted">{info.range}점</span>
+                          </div>
                           <span className="text-text-secondary">{info.desc}</span>
                         </div>
                       ))}
