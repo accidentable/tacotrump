@@ -66,12 +66,45 @@ export default function RiskCard({ risk, loading }: RiskCardProps) {
             <span className="text-base font-semibold" style={{ color: level.color }}>
               {level.label}
             </span>
-            <button
-              onClick={() => setShowHelp(!showHelp)}
-              className="text-text-muted hover:text-text-primary transition-colors ml-0.5"
-            >
-              <HelpCircle className="w-4 h-4" />
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setShowHelp(!showHelp)}
+                className="text-text-muted hover:text-text-primary transition-colors ml-0.5"
+              >
+                <HelpCircle className="w-4 h-4" />
+              </button>
+
+              {/* 풍선 팝오버 */}
+              {showHelp && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setShowHelp(false)} />
+                  <div className="absolute left-1/2 -translate-x-1/2 top-8 z-50 w-64 bg-bg-card border border-border rounded-lg shadow-lg p-3 animate-in">
+                    {/* 말풍선 꼬리 */}
+                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-3 h-3 bg-bg-card border-l border-t border-border rotate-45" />
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-semibold text-text-primary">레벨 기준</span>
+                      <button onClick={() => setShowHelp(false)} className="text-text-muted hover:text-text-primary">
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                    <div className="space-y-1.5">
+                      {LEVEL_INFO.map(info => (
+                        <div
+                          key={info.lv}
+                          className="flex gap-2 items-start text-xs"
+                          style={{ opacity: info.lv === risk.level ? 1 : 0.55 }}
+                        >
+                          <span className="font-bold shrink-0 w-12" style={{ color: info.color }}>
+                            Lv.{info.lv} {info.label}
+                          </span>
+                          <span className="text-text-secondary">{info.desc}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
           <span className="text-xs text-text-muted">
             <span className="font-semibold text-text-primary">{risk.total_score.toFixed(1)}</span> / {risk.max_score.toFixed(1)}
@@ -84,32 +117,6 @@ export default function RiskCard({ risk, loading }: RiskCardProps) {
           {risk.description}
         </p>
       </div>
-
-      {/* 레벨 설명 패널 */}
-      {showHelp && (
-        <div className="border-t border-border bg-bg-primary px-4 py-3">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-text-primary">레벨 기준</span>
-            <button onClick={() => setShowHelp(false)} className="text-text-muted hover:text-text-primary">
-              <X className="w-3.5 h-3.5" />
-            </button>
-          </div>
-          <div className="space-y-1.5">
-            {LEVEL_INFO.map(info => (
-              <div
-                key={info.lv}
-                className="flex gap-2 items-start text-xs"
-                style={{ opacity: info.lv === risk.level ? 1 : 0.55 }}
-              >
-                <span className="font-bold shrink-0 w-12" style={{ color: info.color }}>
-                  Lv.{info.lv} {info.label}
-                </span>
-                <span className="text-text-secondary">{info.desc}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* 이미지 */}
       <div style={{ backgroundColor: level.bg }}>
