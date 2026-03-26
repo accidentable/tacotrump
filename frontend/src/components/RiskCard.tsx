@@ -50,11 +50,11 @@ export default function RiskCard({ risk, loading }: RiskCardProps) {
 
   return (
     <div
-      className="bg-bg-card border rounded-lg overflow-hidden max-w-sm mx-auto relative"
+      className="bg-bg-card border rounded-lg max-w-sm mx-auto relative"
       style={{ borderColor: level.border }}
     >
       {/* 상단 색상 바 */}
-      <div className="h-1.5" style={{ backgroundColor: level.color }} />
+      <div className="h-1.5 rounded-t-lg" style={{ backgroundColor: level.color }} />
 
       {/* 정보 영역 */}
       <div className="p-4">
@@ -123,7 +123,7 @@ export default function RiskCard({ risk, loading }: RiskCardProps) {
         <img
           src={imgSrc}
           alt={`Level ${risk.level}`}
-          className="w-full object-cover"
+          className="w-full object-cover rounded-b-lg"
         />
       </div>
     </div>
