@@ -1,3 +1,4 @@
+import { useSyncExternalStore } from 'react';
 import {
   LineChart,
   Line,
@@ -11,12 +12,51 @@ import {
 import type { HistoryEntry } from '../utils/riskCalculator';
 import { RISK_LEVELS } from '../utils/constants';
 
+function useDarkMode() {
+  return useSyncExternalStore(
+    (cb) => {
+      const obs = new MutationObserver(cb);
+      obs.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+      return () => obs.disconnect();
+    },
+    () => document.documentElement.classList.contains('dark'),
+  );
+}
+
+const COLORS = {
+  light: {
+    grid: '#E2E8F0',
+    tick: '#8899A6',
+    axis: '#CBD5E1',
+    line: '#1B2A4A',
+    tooltipBg: '#FFFFFF',
+    tooltipBorder: '#E2E8F0',
+    tooltipText: '#1A1A1A',
+    tooltipLabel: '#4A5568',
+    dotStroke: '#fff',
+  },
+  dark: {
+    grid: '#2D3B4E',
+    tick: '#6B7B8D',
+    axis: '#3D4F65',
+    line: '#4A7BF7',
+    tooltipBg: '#1A2332',
+    tooltipBorder: '#2D3B4E',
+    tooltipText: '#E8ECF1',
+    tooltipLabel: '#A0AEC0',
+    dotStroke: '#1A2332',
+  },
+} as const;
+
 interface HistoryTimelineProps {
   history: HistoryEntry[];
   loading: boolean;
 }
 
 export default function HistoryTimeline({ history, loading }: HistoryTimelineProps) {
+  const isDark = useDarkMode();
+  const c = isDark ? COLORS.dark : COLORS.light;
+
   if (loading) {
     return (
       <section>
@@ -52,32 +92,32 @@ export default function HistoryTimeline({ history, loading }: HistoryTimelinePro
             <LineChart data={chartData} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
               <CartesianGrid
                 strokeDasharray="3 3"
-                stroke="#E2E8F0"
+                stroke={c.grid}
                 vertical={false}
               />
               <XAxis
                 dataKey="time"
-                tick={{ fill: '#8899A6', fontSize: 11 }}
-                axisLine={{ stroke: '#CBD5E1' }}
-                tickLine={{ stroke: '#CBD5E1' }}
+                tick={{ fill: c.tick, fontSize: 11 }}
+                axisLine={{ stroke: c.axis }}
+                tickLine={{ stroke: c.axis }}
               />
               <YAxis
                 domain={[0, 4]}
                 ticks={[0, 1, 2, 3, 4]}
-                tick={{ fill: '#8899A6', fontSize: 11 }}
-                axisLine={{ stroke: '#CBD5E1' }}
-                tickLine={{ stroke: '#CBD5E1' }}
+                tick={{ fill: c.tick, fontSize: 11 }}
+                axisLine={{ stroke: c.axis }}
+                tickLine={{ stroke: c.axis }}
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#FFFFFF',
-                  border: '1px solid #E2E8F0',
+                  backgroundColor: c.tooltipBg,
+                  border: `1px solid ${c.tooltipBorder}`,
                   borderRadius: '6px',
-                  color: '#1A1A1A',
+                  color: c.tooltipText,
                   fontSize: '12px',
                   boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
                 }}
-                labelStyle={{ color: '#4A5568', fontWeight: 500 }}
+                labelStyle={{ color: c.tooltipLabel, fontWeight: 500 }}
                 formatter={(value) => [Number(value).toFixed(2), '종합 점수']}
               />
               <ReferenceLine y={1} stroke={RISK_LEVELS[1].color} strokeDasharray="5 5" strokeOpacity={0.4} />
@@ -86,10 +126,10 @@ export default function HistoryTimeline({ history, loading }: HistoryTimelinePro
               <Line
                 type="monotone"
                 dataKey="score"
-                stroke="#1B2A4A"
+                stroke={c.line}
                 strokeWidth={2}
                 dot={false}
-                activeDot={{ r: 4, fill: '#1B2A4A', stroke: '#fff', strokeWidth: 2 }}
+                activeDot={{ r: 4, fill: c.line, stroke: c.dotStroke, strokeWidth: 2 }}
               />
             </LineChart>
           </ResponsiveContainer>

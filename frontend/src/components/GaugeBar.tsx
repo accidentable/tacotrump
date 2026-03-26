@@ -14,7 +14,7 @@ export default function GaugeBar({ percent, height = 6, showLabel = false }: Gau
     <div className="w-full">
       <div
         className="w-full rounded-sm overflow-hidden"
-        style={{ height: `${height}px`, backgroundColor: '#E2E8F0' }}
+        style={{ height: `${height}px`, backgroundColor: 'var(--color-border)' }}
       >
         <div
           className="h-full rounded-sm gauge-animated transition-all duration-700"
