@@ -124,7 +124,9 @@ export default function RiskCard({ risk, loading }: RiskCardProps) {
       <div style={{ backgroundColor: level.bg }}>
         <img
           src={imgSrc}
-          alt={`Level ${risk.level}`}
+          alt={`타코 위험도 레벨 ${risk.level} - ${level.label}`}
+          loading="lazy"
+          decoding="async"
           className="w-full object-cover rounded-b-lg"
         />
       </div>
