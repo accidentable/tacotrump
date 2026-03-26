@@ -9,12 +9,12 @@ interface RiskCardProps {
   loading: boolean;
 }
 
-const LEVEL_IMAGES: Record<number, string[]> = {
-  1: ['/level1_1.png', '/level1_2.png'],
-  2: ['/level2_1.png', '/level2_2.png'],
-  3: ['/level3_1.png', '/level3_2.png'],
-  4: ['/level4_1.png', '/level4_2.png'],
-};
+const ALL_IMAGES = [
+  '/level1_1.png', '/level1_2.png',
+  '/level2_1.png', '/level2_2.png',
+  '/level3_1.png', '/level3_2.png',
+  '/level4_1.png', '/level4_2.png',
+];
 
 const LEVEL_INFO = [
   { lv: 1, label: '안전', color: '#16A34A', desc: '시장 안정. 트럼프 자신감 충전 중. 새로운 사고를 칠 확률이 높은 구간.' },
@@ -33,8 +33,7 @@ export default function RiskCard({ risk, loading }: RiskCardProps) {
 
   useEffect(() => {
     if (!risk) return;
-    const images = LEVEL_IMAGES[risk.level] || LEVEL_IMAGES[1];
-    setImgSrc(pickRandom(images));
+    setImgSrc(pickRandom(ALL_IMAGES));
   }, [risk?.level]);
 
   if (loading || !risk) {
