@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Sun, Moon, Bell, BellOff } from 'lucide-react';
 import { RISK_LEVELS } from '../utils/constants';
 
-
 const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || '';
 
 function urlBase64ToUint8Array(base64String: string) {
@@ -12,6 +11,16 @@ function urlBase64ToUint8Array(base64String: string) {
   const arr = new Uint8Array(raw.length);
   for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
   return arr;
+}
+
+function isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+function isStandalone() {
+  return window.matchMedia('(display-mode: standalone)').matches
+    || ('standalone' in navigator && (navigator as unknown as { standalone: boolean }).standalone);
 }
 
 interface HeaderProps {
@@ -27,6 +36,7 @@ export default function Header({ riskLevel }: HeaderProps) {
     localStorage.getItem('push_enabled') === 'true'
   );
   const [pushLoading, setPushLoading] = useState(false);
+  const [showPushGuide, setShowPushGuide] = useState(false);
 
   useEffect(() => {
     if (isDark) {
@@ -38,7 +48,15 @@ export default function Header({ riskLevel }: HeaderProps) {
     }
   }, [isDark]);
 
+  const pushFullySupported = 'serviceWorker' in navigator && 'PushManager' in window && !!VAPID_PUBLIC_KEY;
+
   const handlePushToggle = async () => {
+    // 미지원 환경 → 안내
+    if (!pushFullySupported) {
+      setShowPushGuide(true);
+      return;
+    }
+
     if (pushLoading) return;
     setPushLoading(true);
 
@@ -85,40 +103,42 @@ export default function Header({ riskLevel }: HeaderProps) {
     }
   };
 
-  const pushSupported = 'serviceWorker' in navigator && 'PushManager' in window && VAPID_PUBLIC_KEY;
+  const guideMessage = isIOS() && !isStandalone()
+    ? '아이폰에서 알림을 받으려면\n"홈 화면에 추가" 후 앱에서 다시 눌러주세요.'
+    : '이 브라우저에서는 푸시 알림이 지원되지 않습니다.\nChrome 또는 홈 화면에 추가 후 이용해주세요.';
 
   return (
-    <header className="bg-bg-header border-b border-border">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between h-14">
-          <div className="flex items-center gap-2.5">
-            <h1 className="text-lg font-bold tracking-tight text-text-primary">
-              TACO
-            </h1>
-            <span className="text-text-muted text-xs hidden sm:inline">|</span>
-            <span className="text-text-muted text-sm hidden sm:inline">
-              Trump Always Chickens Out
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <div
-              className="px-2.5 py-1 rounded-lg text-xs font-semibold"
-              style={{
-                backgroundColor: level.bg,
-                color: level.color,
-              }}
-            >
-              Lv.{riskLevel} {level.label}
+    <>
+      <header className="bg-bg-header border-b border-border">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          <div className="flex items-center justify-between h-14">
+            <div className="flex items-center gap-2.5">
+              <h1 className="text-lg font-bold tracking-tight text-text-primary">
+                TACO
+              </h1>
+              <span className="text-text-muted text-xs hidden sm:inline">|</span>
+              <span className="text-text-muted text-sm hidden sm:inline">
+                Trump Always Chickens Out
+              </span>
             </div>
-            <button
-              onClick={() => setIsDark(!isDark)}
-              className="p-1.5 rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-card-hover transition-colors"
-              aria-label={isDark ? '라이트 모드로 전환' : '다크 모드로 전환'}
-            >
-              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            </button>
-            {pushSupported && (
+
+            <div className="flex items-center gap-2">
+              <div
+                className="px-2.5 py-1 rounded-lg text-xs font-semibold"
+                style={{
+                  backgroundColor: level.bg,
+                  color: level.color,
+                }}
+              >
+                Lv.{riskLevel} {level.label}
+              </div>
+              <button
+                onClick={() => setIsDark(!isDark)}
+                className="p-1.5 rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-card-hover transition-colors"
+                aria-label={isDark ? '라이트 모드로 전환' : '다크 모드로 전환'}
+              >
+                {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              </button>
               <button
                 onClick={handlePushToggle}
                 disabled={pushLoading}
@@ -129,10 +149,29 @@ export default function Header({ riskLevel }: HeaderProps) {
                   ? <Bell className="w-4 h-4" />
                   : <BellOff className="w-4 h-4" />}
               </button>
-            )}
+            </div>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* 푸시 미지원 안내 토스트 */}
+      {showPushGuide && (
+        <>
+          <div className="fixed inset-0 z-40 bg-black/30" onClick={() => setShowPushGuide(false)} />
+          <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-72 toss-card p-5 text-center">
+            <Bell className="w-8 h-8 text-accent mx-auto mb-3" />
+            <p className="text-sm text-text-primary font-medium whitespace-pre-line leading-relaxed">
+              {guideMessage}
+            </p>
+            <button
+              onClick={() => setShowPushGuide(false)}
+              className="mt-4 w-full py-2.5 bg-accent hover:bg-accent/90 text-white text-sm font-medium rounded-xl transition-colors"
+            >
+              확인
+            </button>
+          </div>
+        </>
+      )}
+    </>
   );
 }
