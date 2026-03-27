@@ -6,13 +6,21 @@ interface ShareButtonProps {
   label: string;
 }
 
+const VIRAL_TEXT: Record<number, string> = {
+  1: '🌮 트럼프가 타코할 확률은? 매우 낮음!\n지금은 자신감 충전 중… 폭풍 전의 고요일 수도?\n👉 실시간 타코 지수 확인하기',
+  2: '🌮 트럼프가 타코할 확률은? 낮음\n슬슬 시장이 흔들리는 낌새…\n👉 실시간 타코 지수 확인하기',
+  3: '🌮 트럼프가 타코할 확률은? 높음!\n꼬리 내릴 준비 중이래요 ㅋㅋ\n👉 실시간 타코 지수 확인하기',
+  4: '🚨 트럼프가 타코할 확률은? 매우 높음!!\n시장 패닉 → 정책 번복 임박 🌮🌮🌮\n👉 실시간 타코 지수 확인하기',
+};
+
 export default function ShareButton({ riskLevel, label }: ShareButtonProps) {
   const [copied, setCopied] = useState(false);
 
   const handleShare = async () => {
+    const text = VIRAL_TEXT[riskLevel] ?? VIRAL_TEXT[1];
     const shareData = {
-      title: '타코알리미 – Trump Always Chickens Out',
-      text: `현재 타코 지수: Lv.${riskLevel} ${label}`,
+      title: '타코알리미 – 트럼프 타코 확률은?',
+      text,
       url: 'https://tacotrump.space',
     };
 
