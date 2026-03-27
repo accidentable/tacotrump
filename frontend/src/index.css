@@ -1,21 +1,21 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg-primary: #FAFBFC;
+  --color-bg-primary: #F4F5F7;
   --color-bg-card: #FFFFFF;
-  --color-bg-card-hover: #F5F6F8;
-  --color-bg-header: #1B2A4A;
-  --color-text-primary: #1A1A1A;
-  --color-text-secondary: #4A5568;
-  --color-text-muted: #8899A6;
-  --color-border: #E2E8F0;
-  --color-border-strong: #CBD5E1;
-  --color-safe: #16A34A;
-  --color-caution: #D97706;
-  --color-warning: #EA580C;
-  --color-danger: #DC2626;
-  --color-accent: #1B2A4A;
-  --color-accent-light: #2E4A7A;
+  --color-bg-card-hover: #F0F1F3;
+  --color-bg-header: #FFFFFF;
+  --color-text-primary: #191F28;
+  --color-text-secondary: #4E5968;
+  --color-text-muted: #8B95A1;
+  --color-border: #E5E8EB;
+  --color-border-strong: #D1D6DB;
+  --color-safe: #3CD5AF;
+  --color-caution: #FFC84C;
+  --color-warning: #F58737;
+  --color-danger: #F04452;
+  --color-accent: #3182F6;
+  --color-accent-light: #5B9CF6;
 
   --font-sans: 'Pretendard', 'Inter', system-ui, -apple-system, sans-serif;
 }
@@ -42,17 +42,35 @@ body {
   animation: gauge-fill 0.8s ease-out;
 }
 
+/* Toss-style card shadow */
+.toss-card {
+  background: var(--color-bg-card);
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.2s ease;
+}
+.toss-card:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06), 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
 /* Dark mode overrides */
 .dark {
-  --color-bg-primary: #0F1729;
-  --color-bg-card: #1A2332;
-  --color-bg-card-hover: #243044;
-  --color-bg-header: #0B1120;
-  --color-text-primary: #E8ECF1;
-  --color-text-secondary: #A0AEC0;
-  --color-text-muted: #6B7B8D;
-  --color-border: #2D3B4E;
-  --color-border-strong: #3D4F65;
-  --color-accent: #4A7BF7;
-  --color-accent-light: #3A5BA0;
+  --color-bg-primary: #0E1116;
+  --color-bg-card: #1B1D23;
+  --color-bg-card-hover: #25282F;
+  --color-bg-header: #1B1D23;
+  --color-text-primary: #ECECEC;
+  --color-text-secondary: #A0A6B1;
+  --color-text-muted: #6B7280;
+  --color-border: #2C2F36;
+  --color-border-strong: #3B3F48;
+  --color-accent: #4E9AFF;
+  --color-accent-light: #6BABFF;
+}
+
+.dark .toss-card {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+.dark .toss-card:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25), 0 8px 20px rgba(0, 0, 0, 0.3);
 }

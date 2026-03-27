@@ -10,13 +10,13 @@ export default function IndicatorGrid({ indicators, loading }: IndicatorGridProp
   if (loading) {
     return (
       <section>
-        <h2 className="text-sm font-semibold text-text-primary mb-3 border-b-2 border-accent pb-1.5">
-          핵심 지표 (Core Indicators)
+        <h2 className="text-lg font-bold text-text-primary mb-4">
+          핵심 지표
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {[1, 2, 3, 4].map(i => (
-            <div key={i} className="bg-bg-card border border-border rounded-lg p-4 animate-pulse">
-              <div className="h-28 bg-bg-card-hover rounded" />
+            <div key={i} className="toss-card p-5 animate-pulse">
+              <div className="h-28 bg-bg-card-hover rounded-xl" />
             </div>
           ))}
         </div>
@@ -26,10 +26,10 @@ export default function IndicatorGrid({ indicators, loading }: IndicatorGridProp
 
   return (
     <section>
-      <h2 className="text-sm font-semibold text-text-primary mb-3 border-b-2 border-accent pb-1.5">
-        핵심 지표 (Core Indicators)
+      <h2 className="text-lg font-bold text-text-primary mb-4">
+        핵심 지표
       </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {indicators.map(ind => (
           <IndicatorCard key={ind.key} indicator={ind} />
         ))}

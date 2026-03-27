@@ -39,12 +39,12 @@ export default function ShareButton({ riskLevel }: ShareButtonProps) {
   return (
     <button
       onClick={handleShare}
-      className="relative w-full flex items-center justify-center gap-2 px-4 py-3 bg-bg-card border border-border-card rounded-xl text-text-primary hover:bg-bg-card/80 transition-colors cursor-pointer"
+      className="relative w-full flex items-center justify-center gap-2 px-4 py-3.5 bg-accent hover:bg-accent/90 rounded-2xl text-white font-medium transition-colors cursor-pointer"
     >
       <Share2 className="w-4 h-4" />
-      <span className="text-sm font-medium">공유하러 가기</span>
+      <span className="text-sm">공유하러 가기</span>
       {copied && (
-        <span className="absolute right-4 text-xs text-green-500 font-medium">
+        <span className="absolute right-4 text-xs text-white/80 font-medium">
           링크 복사됨!
         </span>
       )}

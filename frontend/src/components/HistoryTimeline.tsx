@@ -25,26 +25,26 @@ function useDarkMode() {
 
 const COLORS = {
   light: {
-    grid: '#E2E8F0',
-    tick: '#8899A6',
-    axis: '#CBD5E1',
-    line: '#1B2A4A',
+    grid: '#E5E8EB',
+    tick: '#8B95A1',
+    axis: '#D1D6DB',
+    line: '#3182F6',
     tooltipBg: '#FFFFFF',
-    tooltipBorder: '#E2E8F0',
-    tooltipText: '#1A1A1A',
-    tooltipLabel: '#4A5568',
+    tooltipBorder: '#E5E8EB',
+    tooltipText: '#191F28',
+    tooltipLabel: '#4E5968',
     dotStroke: '#fff',
   },
   dark: {
-    grid: '#2D3B4E',
-    tick: '#6B7B8D',
-    axis: '#3D4F65',
-    line: '#4A7BF7',
-    tooltipBg: '#1A2332',
-    tooltipBorder: '#2D3B4E',
-    tooltipText: '#E8ECF1',
-    tooltipLabel: '#A0AEC0',
-    dotStroke: '#1A2332',
+    grid: '#2C2F36',
+    tick: '#6B7280',
+    axis: '#3B3F48',
+    line: '#4E9AFF',
+    tooltipBg: '#1B1D23',
+    tooltipBorder: '#2C2F36',
+    tooltipText: '#ECECEC',
+    tooltipLabel: '#A0A6B1',
+    dotStroke: '#1B1D23',
   },
 } as const;
 
@@ -60,11 +60,11 @@ export default function HistoryTimeline({ history, loading }: HistoryTimelinePro
   if (loading) {
     return (
       <section>
-        <h2 className="text-sm font-semibold text-text-primary mb-3 border-b-2 border-accent pb-1.5">
-          위험도 추이 (Risk Trend)
+        <h2 className="text-lg font-bold text-text-primary mb-4">
+          위험도 추이
         </h2>
-        <div className="bg-bg-card border border-border rounded-lg p-5 animate-pulse">
-          <div className="h-64 bg-bg-card-hover rounded" />
+        <div className="toss-card p-5 animate-pulse">
+          <div className="h-64 bg-bg-card-hover rounded-xl" />
         </div>
       </section>
     );
@@ -78,11 +78,11 @@ export default function HistoryTimeline({ history, loading }: HistoryTimelinePro
 
   return (
     <section>
-      <h2 className="text-sm font-semibold text-text-primary mb-3 border-b-2 border-accent pb-1.5">
-        위험도 추이 (Risk Trend)
+      <h2 className="text-lg font-bold text-text-primary mb-4">
+        위험도 추이
       </h2>
 
-      <div className="bg-bg-card border border-border rounded-lg p-5">
+      <div className="toss-card p-5">
         {chartData.length === 0 ? (
           <div className="h-64 flex items-center justify-center text-text-muted text-sm">
             데이터 수집 중...
@@ -112,10 +112,10 @@ export default function HistoryTimeline({ history, loading }: HistoryTimelinePro
                 contentStyle={{
                   backgroundColor: c.tooltipBg,
                   border: `1px solid ${c.tooltipBorder}`,
-                  borderRadius: '6px',
+                  borderRadius: '12px',
                   color: c.tooltipText,
                   fontSize: '12px',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
                 }}
                 labelStyle={{ color: c.tooltipLabel, fontWeight: 500 }}
                 formatter={(value) => [Number(value).toFixed(2), '종합 점수']}
@@ -126,9 +126,9 @@ export default function HistoryTimeline({ history, loading }: HistoryTimelinePro
                 type="monotone"
                 dataKey="score"
                 stroke={c.line}
-                strokeWidth={2}
+                strokeWidth={2.5}
                 dot={false}
-                activeDot={{ r: 4, fill: c.line, stroke: c.dotStroke, strokeWidth: 2 }}
+                activeDot={{ r: 5, fill: c.line, stroke: c.dotStroke, strokeWidth: 2 }}
               />
             </LineChart>
           </ResponsiveContainer>

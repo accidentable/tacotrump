@@ -16,21 +16,21 @@ export default function ExtendedIndicators({ indicators }: ExtendedIndicatorsPro
     <section>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 text-sm font-semibold text-text-primary mb-3 border-b-2 border-border-strong pb-1.5 w-full text-left hover:text-accent transition-colors"
+        className="flex items-center gap-1.5 text-lg font-bold text-text-primary mb-4 w-full text-left hover:text-accent transition-colors"
       >
         {isOpen ? (
-          <ChevronDown className="w-4 h-4" />
+          <ChevronDown className="w-5 h-5" />
         ) : (
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="w-5 h-5" />
         )}
-        확장 지표 (Extended)
-        <span className="text-xs font-normal text-text-muted ml-1">
+        확장 지표
+        <span className="text-sm font-normal text-text-muted ml-1">
           {indicators.length}개
         </span>
       </button>
 
       {isOpen && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {indicators.map(ind => (
             <IndicatorCard key={ind.key} indicator={ind} />
           ))}

@@ -24,13 +24,13 @@ export default function TruthFeed({ posts, loading }: TruthFeedProps) {
   if (loading) {
     return (
       <section>
-        <h2 className="text-sm font-semibold text-text-primary mb-3 border-b-2 border-accent pb-1.5">
+        <h2 className="text-lg font-bold text-text-primary mb-4">
           Trump Truth Social
         </h2>
-        <div className="bg-bg-card border border-border rounded-lg p-5 animate-pulse">
+        <div className="toss-card p-5 animate-pulse">
           <div className="space-y-3">
             {[1, 2, 3].map(i => (
-              <div key={i} className="h-16 bg-bg-card-hover rounded" />
+              <div key={i} className="h-16 bg-bg-card-hover rounded-xl" />
             ))}
           </div>
         </div>
@@ -40,11 +40,11 @@ export default function TruthFeed({ posts, loading }: TruthFeedProps) {
 
   return (
     <section>
-      <h2 className="text-sm font-semibold text-text-primary mb-3 border-b-2 border-accent pb-1.5">
+      <h2 className="text-lg font-bold text-text-primary mb-4">
         Trump Truth Social
       </h2>
 
-      <div className="bg-bg-card border border-border rounded-lg h-[400px] overflow-y-auto overflow-x-hidden">
+      <div className="toss-card h-[400px] overflow-y-auto overflow-x-hidden">
         {posts.length === 0 ? (
           <div className="p-5 text-center text-text-muted text-sm">
             데이터를 불러올 수 없습니다
@@ -56,7 +56,7 @@ export default function TruthFeed({ posts, loading }: TruthFeedProps) {
               href={post.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-between px-4 h-12 border-b border-border hover:bg-bg-card-hover transition-colors group min-w-0"
+              className="flex items-center justify-between px-5 h-12 border-b border-border hover:bg-bg-card-hover transition-colors group min-w-0"
             >
               <span className="text-sm text-text-primary truncate flex-1 mr-3 min-w-0">
                 {post.translated || post.content}

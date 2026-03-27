@@ -1,8 +1,8 @@
 export const RISK_LEVELS = {
-  1: { label: '안전', color: '#16A34A', bg: '#F0FDF4', border: '#BBF7D0' },
-  2: { label: '주의', color: '#D97706', bg: '#FFFBEB', border: '#FDE68A' },
-  3: { label: '경고', color: '#EA580C', bg: '#FFF7ED', border: '#FED7AA' },
-  4: { label: '위험', color: '#DC2626', bg: '#FEF2F2', border: '#FECACA' },
+  1: { label: '안전', color: '#3CD5AF', bg: '#EAFAF5', border: '#B5F0DE' },
+  2: { label: '주의', color: '#FFC84C', bg: '#FFF8E6', border: '#FFE8A3' },
+  3: { label: '경고', color: '#F58737', bg: '#FFF3EB', border: '#FDCBA4' },
+  4: { label: '위험', color: '#F04452', bg: '#FEECEE', border: '#FCBCC3' },
 } as const;
 
 export const REDLINES = {

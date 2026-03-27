@@ -13,11 +13,11 @@ export default function GaugeBar({ percent, height = 6, showLabel = false }: Gau
   return (
     <div className="w-full">
       <div
-        className="w-full rounded-sm overflow-hidden"
+        className="w-full rounded-full overflow-hidden"
         style={{ height: `${height}px`, backgroundColor: 'var(--color-border)' }}
       >
         <div
-          className="h-full rounded-sm gauge-animated transition-all duration-700"
+          className="h-full rounded-full gauge-animated transition-all duration-700"
           style={{ width: `${clampedPercent}%`, backgroundColor: color }}
         />
       </div>

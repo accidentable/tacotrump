@@ -1,7 +1,9 @@
-import { TrendingUp, TrendingDown, Minus, Landmark, Fuel, DollarSign, Users, BarChart3, Activity } from 'lucide-react';
+import { useState } from 'react';
+import { TrendingUp, TrendingDown, Minus, Landmark, Fuel, DollarSign, Users, BarChart3, Activity, ChevronDown } from 'lucide-react';
 
 import type { IndicatorData } from '../utils/riskCalculator';
 import { calculateGaugePercent, getGaugeColor } from '../utils/riskCalculator';
+import { INDICATOR_DESCRIPTIONS } from '../utils/indicatorDescriptions';
 import GaugeBar from './GaugeBar';
 
 interface IndicatorCardProps {
@@ -29,12 +31,14 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
 
 export default function IndicatorCard({ indicator }: IndicatorCardProps) {
   const { key, label, value, change, unit, redline, redline_direction, score } = indicator;
+  const [showDetail, setShowDetail] = useState(false);
 
   const Icon = ICON_MAP[key] || BarChart3;
+  const desc = INDICATOR_DESCRIPTIONS[key];
 
   const isPositive = (change ?? 0) > 0;
   const isNegative = (change ?? 0) < 0;
-  const changeColor = isPositive ? '#16A34A' : isNegative ? '#DC2626' : '#8899A6';
+  const changeColor = isPositive ? '#3CD5AF' : isNegative ? '#F04452' : '#8B95A1';
   const ChangeIcon = isPositive ? TrendingUp : isNegative ? TrendingDown : Minus;
 
   const gaugePercent = redline != null
@@ -49,9 +53,9 @@ export default function IndicatorCard({ indicator }: IndicatorCardProps) {
   };
 
   return (
-    <div className="bg-bg-card border border-border rounded-lg p-4 hover:shadow-sm transition-shadow">
+    <div className="toss-card p-5">
       {/* Header */}
-      <div className="mb-3 pb-2 border-b border-border">
+      <div className="mb-3">
         <div className="flex items-center gap-2">
           <Icon className="w-4 h-4 text-accent" />
           <span className="text-sm text-text-secondary font-medium">{label}</span>
@@ -64,9 +68,9 @@ export default function IndicatorCard({ indicator }: IndicatorCardProps) {
       </div>
 
       {/* Value + Change */}
-      <div className="flex items-baseline justify-between mb-3">
+      <div className="flex items-baseline justify-between mb-4">
         <div className="flex items-baseline gap-1.5">
-          <span className="text-2xl font-bold tabular-nums text-text-primary">
+          <span className="text-3xl font-bold tabular-nums text-text-primary">
             {formatValue(value)}
           </span>
           <span className="text-xs text-text-muted">{unit}</span>
@@ -81,19 +85,67 @@ export default function IndicatorCard({ indicator }: IndicatorCardProps) {
 
       {/* Gauge */}
       <div>
-        <div className="flex justify-between text-[11px] text-text-muted mb-1">
+        <div className="flex justify-between text-[11px] text-text-muted mb-1.5">
           <span>타코 게이지</span>
           <span className="font-medium" style={{ color: gaugeColor }}>
             {gaugePercent.toFixed(0)}%
           </span>
         </div>
-        <GaugeBar percent={gaugePercent} height={4} />
-        <div className="text-right mt-0.5">
+        <GaugeBar percent={gaugePercent} height={6} />
+        <div className="text-right mt-1">
           <span className="text-[10px] text-text-muted">
             레드라인: {redline != null ? `${redline}${unit}` : '-'}
           </span>
         </div>
       </div>
+
+      {/* 더 알아보기 — Toss-style */}
+      {desc && (
+        <div className="mt-3 pt-3 border-t border-border">
+          <button
+            onClick={() => setShowDetail(!showDetail)}
+            className="flex items-center gap-1 text-xs text-text-muted hover:text-accent transition-colors"
+          >
+            <span>더 알아보기</span>
+            <ChevronDown
+              className={`w-3 h-3 transition-transform duration-200 ${showDetail ? 'rotate-180' : ''}`}
+            />
+          </button>
+
+          <div
+            className={`grid transition-all duration-200 ease-out ${
+              showDetail ? 'grid-rows-[1fr] opacity-100 mt-2' : 'grid-rows-[0fr] opacity-0'
+            }`}
+          >
+            <div className="overflow-hidden">
+              <div className="bg-bg-card-hover rounded-xl px-3 py-3 space-y-2.5">
+                {/* 한 줄 설명 */}
+                <p className="text-xs text-text-secondary leading-relaxed">
+                  {desc.summary}
+                </p>
+
+                {/* 왜 중요해요 */}
+                <div>
+                  <span className="text-[10px] font-semibold text-accent">
+                    왜 중요해요?
+                  </span>
+                  <p className="text-xs text-text-secondary leading-relaxed mt-0.5">
+                    {desc.why}
+                  </p>
+                </div>
+
+                {/* 위험 구간 */}
+                <div className="flex items-start gap-1.5">
+                  <span className="text-[10px] mt-px">⚠️</span>
+                  <p className="text-[11px] text-text-muted leading-relaxed">
+                    {desc.danger}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -56,8 +56,8 @@ export function calculateGaugePercent(
 }
 
 export function getGaugeColor(percent: number): string {
-  if (percent < 33) return '#16A34A';
-  if (percent < 66) return '#D97706';
-  if (percent < 85) return '#EA580C';
-  return '#DC2626';
+  if (percent < 33) return '#3CD5AF';
+  if (percent < 66) return '#FFC84C';
+  if (percent < 85) return '#F58737';
+  return '#F04452';
 }
