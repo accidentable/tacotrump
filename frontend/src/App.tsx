@@ -31,7 +31,7 @@ export default function App() {
       <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 py-6 space-y-6">
         <RiskCard risk={risk} loading={riskLoading} />
         <IndicatorGrid indicators={core} loading={indLoading} />
-        <ShareButton riskLevel={risk?.level ?? 1} label={risk?.label ?? '안전'} />
+        <ShareButton riskLevel={risk?.level ?? 1} />
         <HistoryTimeline history={history} loading={histLoading} />
       </main>
 

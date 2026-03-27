@@ -3,7 +3,6 @@ import { Share2 } from 'lucide-react';
 
 interface ShareButtonProps {
   riskLevel: number;
-  label: string;
 }
 
 const VIRAL_TEXT: Record<number, string> = {
@@ -13,7 +12,7 @@ const VIRAL_TEXT: Record<number, string> = {
   4: '🚨 트럼프가 타코할 확률은? 매우 높음!!\n시장 패닉 → 정책 번복 임박 🌮🌮🌮\n👉 실시간 타코 지수 확인하기',
 };
 
-export default function ShareButton({ riskLevel, label }: ShareButtonProps) {
+export default function ShareButton({ riskLevel }: ShareButtonProps) {
   const [copied, setCopied] = useState(false);
 
   const handleShare = async () => {
