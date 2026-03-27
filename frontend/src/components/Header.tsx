@@ -118,7 +118,7 @@ export default function Header({ riskLevel }: HeaderProps) {
               </h1>
               <span className="text-text-muted text-xs hidden sm:inline">|</span>
               <span className="text-text-muted text-sm hidden sm:inline">
-                Trump Always Chickens Out
+                Trump Always Caves Or Trembles
               </span>
             </div>
 

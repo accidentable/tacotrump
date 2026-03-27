@@ -143,16 +143,16 @@ def calc_total(core_values):
 def get_risk(score):
     # max = 6.0 (6개 지표)
     if score < 1.8:
-        return {"level": 1, "label": "안전", "color": "#16A34A",
-                "description": "시장 안정. 자신감 충전 중. 사고칠 확률 높음."}
+        return {"level": 1, "label": "안전", "color": "#3CD5AF",
+                "description": "시장 안정. 트럼프 강경 발언 지속 가능성 높은 구간."}
     if score < 3.0:
-        return {"level": 2, "label": "주의", "color": "#D97706",
-                "description": "시장이 버티는 중. 한 방 더 올 수 있음."}
+        return {"level": 2, "label": "주의", "color": "#FFC84C",
+                "description": "시장이 버티는 중. 군사 행동 확대 가능성 있음."}
     if score < 4.2:
-        return {"level": 3, "label": "경고", "color": "#EA580C",
-                "description": "시장 흔들리는 중. 슬슬 꼬리 내릴 준비."}
-    return {"level": 4, "label": "위험", "color": "#DC2626",
-            "description": "시장 패닉. 번복 임박."}
+        return {"level": 3, "label": "경고", "color": "#F58737",
+                "description": "시장 흔들리는 중. 협상 테이블로 돌아올 준비."}
+    return {"level": 4, "label": "위험", "color": "#F04452",
+            "description": "시장 패닉. 전쟁 강경 노선 후퇴 임박."}
 
 
 # ── 통합 fetch ─────────────────────────────────────────────────
