@@ -1,6 +1,6 @@
 """
 TACO 점수 산정 엔진
-핵심 5개 지표로 0~5점 산출 → 위험도 레벨 1~4 결정
+핵심 6개 지표로 0~6점 산출 → 위험도 레벨 1~4 결정
 (Vercel 배포 버전과 동기화)
 """
 
@@ -8,7 +8,8 @@ from app.models.schemas import RiskLevel
 
 # 레드라인 기준값 (safe: 이 값 이하면 0점, value: 이 값 이상이면 1점)
 REDLINES = {
-    "sp500":           {"value": -15.0, "direction": "below", "safe": -3.0,  "label": "S&P 500 고점 대비 하락률(%)"},
+    "sp500":           {"value": -15.0, "direction": "below", "safe": -3.0,  "label": "E-mini S&P 선물 고점 대비 하락률(%)"},
+    "vix":             {"value": 35.0,  "direction": "above", "safe": 15.0,  "label": "VIX 공포지수"},
     "treasury_10y":    {"value": 4.5,   "direction": "above", "safe": 4.0,   "label": "미국 10년물 국채금리(%)"},
     "oil":             {"value": 100.0, "direction": "above", "safe": 75.0,  "label": "유가 (WTI, $/배럴)"},
     "dollar_index":    {"value": 110.0, "direction": "above", "safe": 97.0,  "label": "달러 인덱스"},
@@ -22,7 +23,7 @@ EXTENDED_REDLINES = {
     "russell2000": {"value": -25.0, "direction": "below", "label": "Russell 2000 고점 대비 하락률(%)"},
 }
 
-CORE_KEYS = ["sp500", "treasury_10y", "oil", "dollar_index", "approval_rating"]
+CORE_KEYS = ["sp500", "vix", "treasury_10y", "oil", "dollar_index", "approval_rating"]
 
 
 def calculate_indicator_score(key: str, value: float) -> float:
@@ -51,7 +52,7 @@ def calculate_indicator_score(key: str, value: float) -> float:
 
 
 def calculate_total_score(indicators: dict[str, float]) -> float:
-    """핵심 5개 지표의 총점 산출 (0~5점)"""
+    """핵심 6개 지표의 총점 산출 (0~6점)"""
     score = 0.0
     for key in CORE_KEYS:
         if key in indicators:
@@ -60,22 +61,22 @@ def calculate_total_score(indicators: dict[str, float]) -> float:
 
 
 def get_risk_level(total_score: float) -> dict:
-    """총점 → 위험도 레벨 결정 (max = 5.0)"""
-    if total_score < 1.5:
+    """총점 → 위험도 레벨 결정 (max = 6.0)"""
+    if total_score < 1.8:
         return {
             "level": RiskLevel.LEVEL_1,
             "label": "안전",
             "color": "#16A34A",
             "description": "시장 안정. 자신감 충전 중. 사고칠 확률 높음.",
         }
-    elif total_score < 2.5:
+    elif total_score < 3.0:
         return {
             "level": RiskLevel.LEVEL_2,
             "label": "주의",
             "color": "#D97706",
             "description": "시장이 버티는 중. 한 방 더 올 수 있음.",
         }
-    elif total_score < 3.5:
+    elif total_score < 4.2:
         return {
             "level": RiskLevel.LEVEL_3,
             "label": "경고",

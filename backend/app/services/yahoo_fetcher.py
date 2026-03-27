@@ -8,7 +8,8 @@ logger = logging.getLogger(__name__)
 
 TICKERS = {
     "treasury_10y": "^TNX",
-    "sp500": "^GSPC",
+    "sp500": "ES=F",
+    "vix": "^VIX",
     "oil": "BZ=F",
     "dollar_index": "DX-Y.NYB",
     "treasury_30y": "^TYX",
@@ -84,6 +85,7 @@ def get_fallback_data() -> dict[str, dict]:
     return {
         "treasury_10y": {"value": 4.25, "prev_value": 4.22},
         "sp500": {"value": -3.5, "raw_value": 5650.0, "prev_value": -3.2, "high_52w": 5856.0},
+        "vix": {"value": 18.0, "prev_value": 17.5},
         "oil": {"value": 72.50, "prev_value": 73.10},
         "dollar_index": {"value": 104.20, "prev_value": 104.05},
         "treasury_30y": {"value": 4.55, "prev_value": 4.52},

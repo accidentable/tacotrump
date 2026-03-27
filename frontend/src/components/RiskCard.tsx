@@ -11,16 +11,17 @@ interface RiskCardProps {
 
 const ALL_IMAGES = [
   '/level1_1.png', '/level1_2.png',
-  '/level2_1.png', '/level2_2.png',
+  '/level2_2.png',
   '/level3_1.png', '/level3_2.png',
   '/level4_1.png', '/level4_2.png',
+  '/print1.png', '/print2.png',
 ];
 
 const LEVEL_INFO = [
-  { lv: 1, label: '안전', color: '#16A34A', range: '0.0 – 1.4', desc: '시장 안정. 트럼프 자신감 충전 중. 새로운 사고를 칠 확률이 높은 구간.' },
-  { lv: 2, label: '주의', color: '#D97706', range: '1.5 – 2.4', desc: '시장이 버티는 중. 추가 강경책 가능성 있음.' },
-  { lv: 3, label: '경고', color: '#EA580C', range: '2.5 – 3.4', desc: '시장 흔들리는 중. 슬슬 꼬리 내릴 준비.' },
-  { lv: 4, label: '위험', color: '#DC2626', range: '3.5 – 5.0', desc: '시장 패닉. 정책 번복 임박.' },
+  { lv: 1, label: '안전', color: '#16A34A', range: '0.0 – 1.7', desc: '시장 안정. 트럼프 자신감 충전 중. 새로운 사고를 칠 확률이 높은 구간.' },
+  { lv: 2, label: '주의', color: '#D97706', range: '1.8 – 2.9', desc: '시장이 버티는 중. 추가 강경책 가능성 있음.' },
+  { lv: 3, label: '경고', color: '#EA580C', range: '3.0 – 4.1', desc: '시장 흔들리는 중. 슬슬 꼬리 내릴 준비.' },
+  { lv: 4, label: '위험', color: '#DC2626', range: '4.2 – 6.0', desc: '시장 패닉. 정책 번복 임박.' },
 ];
 
 function pickRandom(arr: string[]): string {

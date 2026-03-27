@@ -62,7 +62,7 @@ async def collect_all_data():
 
     # 핵심 지표로 점수 산출
     core_values = {}
-    for key in ["sp500", "treasury_10y", "oil", "dollar_index"]:
+    for key in ["sp500", "vix", "treasury_10y", "oil", "dollar_index"]:
         if key in all_data:
             core_values[key] = all_data[key]["value"]
 

@@ -1,4 +1,4 @@
-import { TrendingUp, TrendingDown, Minus, Landmark, Fuel, DollarSign, Users, BarChart3 } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, Landmark, Fuel, DollarSign, Users, BarChart3, Activity } from 'lucide-react';
 
 import type { IndicatorData } from '../utils/riskCalculator';
 import { calculateGaugePercent, getGaugeColor } from '../utils/riskCalculator';
@@ -10,13 +10,14 @@ interface IndicatorCardProps {
 
 // 한국시간 기준 업데이트 시간 안내
 const MARKET_HOURS: Record<string, string> = {
-  sp500: '업데이트: 월~금 22:30 ~ 05:00 (한국시간, 서머타임)',
-  treasury_10y: '업데이트: 월~금 22:30 ~ 05:00 (한국시간, 서머타임)',
-  treasury_30y: '업데이트: 월~금 22:30 ~ 05:00 (한국시간, 서머타임)',
+  sp500: '업데이트: 일~금 거의 23시간 (E-mini 선물)',
+  treasury_10y: '업데이트: 월~금 22:00 ~ 07:00 (한국시간)',
+  vix: '업데이트: 월~금 22:30 ~ 05:00 (한국시간)',
 };
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   sp500: BarChart3,
+  vix: Activity,
   treasury_10y: Landmark,
   oil: Fuel,
   dollar_index: DollarSign,

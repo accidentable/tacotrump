@@ -33,7 +33,7 @@ export interface HistoryEntry {
 
 // safe zone 기준 — 백엔드와 동일
 const SAFE_ZONES: Record<string, number> = {
-  sp500: -3, treasury_10y: 4.0, oil: 75, dollar_index: 97, approval_rating: 50,
+  sp500: -3, vix: 15, treasury_10y: 4.0, oil: 75, dollar_index: 97, approval_rating: 50,
 };
 
 export function calculateGaugePercent(

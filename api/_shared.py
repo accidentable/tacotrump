@@ -9,7 +9,8 @@ import httpx
 
 TICKERS = {
     "treasury_10y": "^TNX",
-    "sp500": "^GSPC",
+    "sp500": "ES=F",
+    "vix": "^VIX",
     "oil": "CL=F",
     "dollar_index": "DX-Y.NYB",
 }
@@ -53,6 +54,7 @@ async def fetch_yahoo():
 YAHOO_FALLBACK = {
     "treasury_10y": {"value": 4.25, "prev_value": 4.22},
     "sp500": {"value": -3.5, "raw_value": 5650.0, "prev_value": -3.2, "high_52w": 5856.0},
+    "vix": {"value": 18.0, "prev_value": 17.5},
     "oil": {"value": 68.50, "prev_value": 69.10},
     "dollar_index": {"value": 99.20, "prev_value": 99.05},
 }
@@ -85,16 +87,18 @@ async def fetch_approval():
 # safe: 이 값 이하면 0점, redline: 이 값 이상이면 1점
 REDLINES = {
     "sp500":          {"value": -15.0, "direction": "below", "safe": -3.0},
+    "vix":            {"value": 35.0,  "direction": "above", "safe": 15.0},
     "treasury_10y":   {"value": 4.5,   "direction": "above", "safe": 4.0},
     "oil":            {"value": 100.0, "direction": "above", "safe": 75.0},
     "dollar_index":   {"value": 110.0, "direction": "above", "safe": 97.0},
     "approval_rating":{"value": 35.0,  "direction": "below", "safe": 50.0},
 }
 
-CORE_KEYS = ["sp500", "treasury_10y", "oil", "dollar_index", "approval_rating"]
+CORE_KEYS = ["sp500", "vix", "treasury_10y", "oil", "dollar_index", "approval_rating"]
 
 INDICATOR_LABELS = {
-    "sp500": {"label": "S&P 500 (고점대비)", "unit": "%"},
+    "sp500": {"label": "E-mini S&P 선물 (고점대비)", "unit": "%"},
+    "vix": {"label": "VIX 공포지수", "unit": ""},
     "treasury_10y": {"label": "10년물 국채금리", "unit": "%"},
     "oil": {"label": "유가 (WTI)", "unit": "$/bbl"},
     "dollar_index": {"label": "달러 인덱스", "unit": ""},
@@ -128,6 +132,7 @@ def calc_indicator_score(key, value):
 
 
 def calc_total(core_values):
+    # max = 6.0 (6개 지표)
     s = 0.0
     for k in CORE_KEYS:
         if k in core_values:
@@ -136,14 +141,14 @@ def calc_total(core_values):
 
 
 def get_risk(score):
-    # max = 5.0 (5개 지표)
-    if score < 1.5:
+    # max = 6.0 (6개 지표)
+    if score < 1.8:
         return {"level": 1, "label": "안전", "color": "#16A34A",
                 "description": "시장 안정. 자신감 충전 중. 사고칠 확률 높음."}
-    if score < 2.5:
+    if score < 3.0:
         return {"level": 2, "label": "주의", "color": "#D97706",
                 "description": "시장이 버티는 중. 한 방 더 올 수 있음."}
-    if score < 3.5:
+    if score < 4.2:
         return {"level": 3, "label": "경고", "color": "#EA580C",
                 "description": "시장 흔들리는 중. 슬슬 꼬리 내릴 준비."}
     return {"level": 4, "label": "위험", "color": "#DC2626",

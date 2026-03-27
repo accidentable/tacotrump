@@ -16,7 +16,7 @@ class handler(BaseHTTPRequestHandler):
 
             body = json.dumps({
                 "total_score": total,
-                "max_score": 5.0,
+                "max_score": 6.0,
                 "level": risk["level"],
                 "label": risk["label"],
                 "color": risk["color"],
