@@ -78,9 +78,7 @@ export default function RiskCard({ risk, loading }: RiskCardProps) {
               {showHelp && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setShowHelp(false)} />
-                  <div className="absolute left-1/2 -translate-x-1/2 top-8 z-50 w-72 bg-bg-card border border-border rounded-lg shadow-lg p-3 animate-in">
-                    {/* 말풍선 꼬리 */}
-                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-3 h-3 bg-bg-card border-l border-t border-border rotate-45" />
+                  <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-72 bg-bg-card border border-border rounded-lg shadow-lg p-3 animate-in">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-xs font-semibold text-text-primary">레벨 기준</span>
                       <button onClick={() => setShowHelp(false)} className="text-text-muted hover:text-text-primary">
