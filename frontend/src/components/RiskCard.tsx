@@ -14,7 +14,8 @@ const ALL_IMAGES = [
   '/level2_2.png',
   '/level3_1.png', '/level3_2.png',
   '/level4_1.png', '/level4_2.png',
-  '/print1.png', '/print2.png',
+  '/print1.png', '/print2.png', '/print3.png', '/print4.png', '/print5.png',
+  '/print6.png', '/print7.png', '/print8.png', '/print9.png', '/print10.png',
 ];
 
 const LEVEL_INFO = [
