@@ -8,6 +8,7 @@ import json
 import asyncio
 from urllib.parse import parse_qs, urlparse
 import httpx
+from _shared import send_cors_headers, send_error
 
 YAHOO_BASE = "https://query1.finance.yahoo.com/v8/finance/chart"
 HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
@@ -129,20 +130,20 @@ class handler(BaseHTTPRequestHandler):
     def do_GET(self):
         try:
             qs = parse_qs(urlparse(self.path).query)
-            days = int(qs.get("days", ["7"])[0])
-            days = min(days, 90)
+            try:
+                days = int(qs.get("days", ["7"])[0])
+            except (ValueError, IndexError):
+                days = 7
+            days = max(1, min(days, 90))
 
             history = asyncio.run(fetch_history(days))
 
             body = json.dumps(history, ensure_ascii=False)
             self.send_response(200)
             self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.send_header("Access-Control-Allow-Origin", "*")
+            send_cors_headers(self)
             self.send_header("Cache-Control", "s-maxage=300, stale-while-revalidate=600")
             self.end_headers()
             self.wfile.write(body.encode())
-        except Exception as e:
-            self.send_response(500)
-            self.send_header("Content-Type", "application/json")
-            self.end_headers()
-            self.wfile.write(json.dumps({"error": str(e)}).encode())
+        except Exception:
+            send_error(self)

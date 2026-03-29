@@ -7,6 +7,8 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
+MAX_CLIENTS = 100
+
 # 연결된 클라이언트 관리
 _clients: set[WebSocket] = set()
 
@@ -30,6 +32,9 @@ async def broadcast(data: dict):
 
 @router.websocket("/ws/realtime")
 async def websocket_endpoint(websocket: WebSocket):
+    if len(_clients) >= MAX_CLIENTS:
+        await websocket.close(code=1008, reason="Too many connections")
+        return
     await websocket.accept()
     _clients.add(websocket)
     logger.info(f"WebSocket client connected. Total: {len(_clients)}")

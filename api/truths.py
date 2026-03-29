@@ -1,11 +1,14 @@
 """GET /api/truths — 트럼프 Truth Social 최신 글 + OpenAI 한국어 번역"""
 
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 from http.server import BaseHTTPRequestHandler
 import json
 import re
-import os
-import xml.etree.ElementTree as ET
+import defusedxml.ElementTree as ET
 import httpx
+from _shared import send_cors_headers
 
 RSS_URL = "https://www.trumpstruth.org/feed"
 
@@ -127,7 +130,7 @@ class handler(BaseHTTPRequestHandler):
         body = json.dumps(posts, ensure_ascii=False)
         self.send_response(200)
         self.send_header("Content-Type", "application/json; charset=utf-8")
-        self.send_header("Access-Control-Allow-Origin", "*")
+        send_cors_headers(self)
         self.send_header("Cache-Control", "s-maxage=120, stale-while-revalidate=300")
         self.end_headers()
         self.wfile.write(body.encode())

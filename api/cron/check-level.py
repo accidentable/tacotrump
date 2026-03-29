@@ -15,6 +15,7 @@ from _shared import fetch_all
 REDIS_URL = os.environ.get("REDIS_URL", "")
 VAPID_PRIVATE_KEY = os.environ.get("VAPID_PRIVATE_KEY", "")
 VAPID_SUBJECT = os.environ.get("VAPID_SUBJECT", "mailto:admin@tacotrump.space")
+CRON_SECRET = os.environ.get("CRON_SECRET", "")
 
 PUSH_SUBS_KEY = "push_subs"
 LAST_LEVEL_KEY = "push_last_level"
@@ -47,6 +48,16 @@ def send_push(sub_json: str, payload: dict):
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
+        # Verify CRON_SECRET
+        if CRON_SECRET:
+            auth = self.headers.get("Authorization", "")
+            if auth != f"Bearer {CRON_SECRET}":
+                self.send_response(401)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": "Unauthorized"}).encode())
+                return
+
         try:
             r = get_redis()
 
@@ -93,8 +104,8 @@ class handler(BaseHTTPRequestHandler):
             self.send_header("Content-Type", "application/json")
             self.end_headers()
             self.wfile.write(body.encode())
-        except Exception as e:
+        except Exception:
             self.send_response(500)
             self.send_header("Content-Type", "application/json")
             self.end_headers()
-            self.wfile.write(json.dumps({"error": str(e)}).encode())
+            self.wfile.write(json.dumps({"error": "Internal server error"}).encode())

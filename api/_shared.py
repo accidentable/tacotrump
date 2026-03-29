@@ -3,7 +3,37 @@
 import asyncio
 import re
 import os
+import json
 import httpx
+
+# ── CORS ──────────────────────────────────────────────────────
+
+ALLOWED_ORIGIN = "https://tacotrump.space"
+ALLOWED_ORIGINS = {ALLOWED_ORIGIN, "http://localhost:5173"}
+
+
+def send_cors_headers(handler, methods="GET, OPTIONS"):
+    """공통 CORS 응답 헤더 전송"""
+    origin = handler.headers.get("Origin", "")
+    if origin in ALLOWED_ORIGINS:
+        handler.send_header("Access-Control-Allow-Origin", origin)
+    else:
+        handler.send_header("Access-Control-Allow-Origin", ALLOWED_ORIGIN)
+    handler.send_header("Access-Control-Allow-Methods", methods)
+    handler.send_header("Access-Control-Allow-Headers", "Content-Type")
+
+
+def send_error(handler, status=500, message="Internal server error"):
+    """공통 에러 응답"""
+    handler.send_response(status)
+    handler.send_header("Content-Type", "application/json")
+    origin = handler.headers.get("Origin", "")
+    if origin in ALLOWED_ORIGINS:
+        handler.send_header("Access-Control-Allow-Origin", origin)
+    else:
+        handler.send_header("Access-Control-Allow-Origin", ALLOWED_ORIGIN)
+    handler.end_headers()
+    handler.wfile.write(json.dumps({"error": message}).encode())
 
 # ── Yahoo Finance ──────────────────────────────────────────────
 

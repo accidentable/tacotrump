@@ -6,6 +6,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from http.server import BaseHTTPRequestHandler
 import json
 import urllib.request
+from _shared import send_cors_headers
 
 # Vercel Redis / KV 환경변수 (여러 이름 패턴 대응)
 KV_URL = (
@@ -41,7 +42,7 @@ class handler(BaseHTTPRequestHandler):
         body = json.dumps({"views": views})
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
-        self.send_header("Access-Control-Allow-Origin", "*")
+        send_cors_headers(self)
         self.send_header("Cache-Control", "no-cache")
         self.end_headers()
         self.wfile.write(body.encode())
