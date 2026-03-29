@@ -51,9 +51,10 @@ const COLORS = {
 interface HistoryTimelineProps {
   history: HistoryEntry[];
   loading: boolean;
+  currentScore?: number;
 }
 
-export default function HistoryTimeline({ history, loading }: HistoryTimelineProps) {
+export default function HistoryTimeline({ history, loading, currentScore }: HistoryTimelineProps) {
   const isDark = useDarkMode();
   const c = isDark ? COLORS.dark : COLORS.light;
 
@@ -75,6 +76,11 @@ export default function HistoryTimeline({ history, loading }: HistoryTimelinePro
     time: formatTimestamp(entry.timestamp),
     score: entry.total_score,
   }));
+
+  // 현재 라이브 타코지수를 "지금"으로 추가
+  if (currentScore != null) {
+    chartData.push({ time: '지금', score: currentScore } as typeof chartData[number]);
+  }
 
   return (
     <section>
@@ -102,8 +108,8 @@ export default function HistoryTimeline({ history, loading }: HistoryTimelinePro
                 tickLine={{ stroke: c.axis }}
               />
               <YAxis
-                domain={[0, 3]}
-                ticks={[0, 1, 2, 3]}
+                domain={[0, 6]}
+                ticks={[0, 1.8, 3.0, 4.2, 6]}
                 tick={{ fill: c.tick, fontSize: 11 }}
                 axisLine={{ stroke: c.axis }}
                 tickLine={{ stroke: c.axis }}
@@ -120,8 +126,9 @@ export default function HistoryTimeline({ history, loading }: HistoryTimelinePro
                 labelStyle={{ color: c.tooltipLabel, fontWeight: 500 }}
                 formatter={(value) => [Number(value).toFixed(2), '종합 점수']}
               />
-              <ReferenceLine y={1} stroke={RISK_LEVELS[1].color} strokeDasharray="5 5" strokeOpacity={0.4} />
-              <ReferenceLine y={2} stroke={RISK_LEVELS[2].color} strokeDasharray="5 5" strokeOpacity={0.4} />
+              <ReferenceLine y={1.8} stroke={RISK_LEVELS[2].color} strokeDasharray="5 5" strokeOpacity={0.4} />
+              <ReferenceLine y={3.0} stroke={RISK_LEVELS[3].color} strokeDasharray="5 5" strokeOpacity={0.4} />
+              <ReferenceLine y={4.2} stroke={RISK_LEVELS[4].color} strokeDasharray="5 5" strokeOpacity={0.4} />
               <Line
                 type="monotone"
                 dataKey="score"

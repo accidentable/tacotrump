@@ -50,7 +50,7 @@ export default function App() {
         <IndicatorGrid indicators={core} loading={indLoading} />
         <ExtendedIndicators indicators={extended} />
         <ShareButton riskLevel={risk?.level ?? 1} />
-        <HistoryTimeline history={history} loading={histLoading} />
+        <HistoryTimeline history={history} loading={histLoading} currentScore={risk?.total_score} />
       </main>
 
       <Footer />

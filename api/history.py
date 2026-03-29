@@ -8,55 +8,30 @@ import json
 import asyncio
 from urllib.parse import parse_qs, urlparse
 import httpx
-from _shared import send_cors_headers, send_error
-
-YAHOO_BASE = "https://query1.finance.yahoo.com/v8/finance/chart"
-HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+from _shared import (
+    send_cors_headers, send_error,
+    calc_indicator_score, get_risk, fetch_approval,
+    YAHOO_BASE, HEADERS,
+)
 
 TICKERS = {
     "sp500": "^GSPC",
+    "vix": "^VIX",
     "treasury_10y": "^TNX",
     "oil": "CL=F",
     "dollar_index": "DX-Y.NYB",
 }
 
-# safe ~ redline 구간에서 0~1 점수
-REDLINES = {
-    "sp500": {"value": -15.0, "direction": "below", "safe": -3.0},
-    "treasury_10y": {"value": 4.5, "direction": "above", "safe": 4.0},
-    "oil": {"value": 100.0, "direction": "above", "safe": 75.0},
-    "dollar_index": {"value": 110.0, "direction": "above", "safe": 97.0},
-}
-
-
-def calc_score(key, value):
-    info = REDLINES.get(key)
-    if not info:
-        return 0.0
-    rl = info["value"]
-    d = info["direction"]
-    safe = info["safe"]
-
-    if d == "above":
-        if value <= safe: return 0.0
-        if value >= rl: return 1.0
-        return (value - safe) / (rl - safe)
-    else:
-        if value >= safe: return 0.0
-        if value <= rl: return 1.0
-        return (safe - value) / (safe - rl)
-
-
-def get_risk_level(score):
-    if score < 1.5: return 1
-    if score < 2.5: return 2
-    if score < 3.5: return 3
-    return 4
+MARKET_KEYS = ("sp500", "vix", "treasury_10y", "oil", "dollar_index")
 
 
 async def fetch_history(days=7):
     range_str = f"{days}d"
     all_series = {}
+
+    # 지지율은 과거 데이터 없으므로 현재값을 전 구간에 적용
+    approval = await fetch_approval()
+    approval_value = approval["value"]
 
     async with httpx.AsyncClient(headers=HEADERS, timeout=10.0, follow_redirects=True) as client:
         for key, ticker in TICKERS.items():
@@ -87,13 +62,12 @@ async def fetch_history(days=7):
                 continue
 
     # Forward-fill
-    core_keys = ("sp500", "treasury_10y", "oil", "dollar_index")
     last_known = {}
     sorted_dates = sorted(all_series.keys())
 
     for date_str in sorted_dates:
         entry = all_series[date_str]
-        for k in core_keys:
+        for k in MARKET_KEYS:
             if k in entry:
                 last_known[k] = entry[k]
             elif k in last_known:
@@ -102,17 +76,20 @@ async def fetch_history(days=7):
     result = []
     for date_str in sorted_dates:
         entry = all_series[date_str]
-        if not all(k in entry for k in core_keys):
+        if not all(k in entry for k in MARKET_KEYS):
             continue
         total = 0.0
-        for k in core_keys:
-            total += calc_score(k, entry[k])
+        for k in MARKET_KEYS:
+            total += calc_indicator_score(k, entry[k])
+        total += calc_indicator_score("approval_rating", approval_value)
         total = round(total, 2)
+        risk = get_risk(total)
         result.append({
             "timestamp": f"{date_str}T00:00:00+09:00",
             "total_score": total,
-            "risk_level": get_risk_level(total),
+            "risk_level": risk["level"],
             "sp500": entry.get("sp500"),
+            "vix": entry.get("vix"),
             "treasury_10y": entry.get("treasury_10y"),
             "oil": entry.get("oil"),
             "dollar_index": entry.get("dollar_index"),
