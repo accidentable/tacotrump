@@ -113,7 +113,7 @@ export default function RiskCard({ risk, loading }: RiskCardProps) {
         <GaugeBar percent={gaugePercent} height={6} />
 
         <p className="text-sm font-bold text-text-primary leading-snug mt-4">
-          {risk.description}
+          {t(`risk.level${risk.level}.desc` as 'risk.level1.desc')}
         </p>
       </div>
 
