@@ -9,7 +9,7 @@
     { "source": "/api/:path*", "destination": "/api/:path*" }
   ],
   "crons": [
-    { "path": "/api/cron/check-level", "schedule": "0 0 * * *" }
+    { "path": "/api/cron/check-level", "schedule": "0 * * * *" }
   ],
   "headers": [
     {
