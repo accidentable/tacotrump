@@ -10,7 +10,7 @@ TICKERS = {
     "treasury_10y": "^TNX",
     "sp500": "ES=F",
     "vix": "^VIX",
-    "oil": "BZ=F",
+    "oil": "CL=F",
     "dollar_index": "DX-Y.NYB",
     "treasury_30y": "^TYX",
     "russell2000": "^RUT",

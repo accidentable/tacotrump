@@ -16,7 +16,7 @@ const ko = {
   'redline.sp500': 'E-mini S&P 선물 고점대비 하락률',
   'redline.vix': 'VIX 공포지수',
   'redline.treasury_10y': '10년물 국채금리',
-  'redline.oil': '유가 (브렌트)',
+  'redline.oil': '유가 (WTI)',
   'redline.dollar_index': '달러 인덱스',
   'redline.gasoline': '전국 평균 휘발유',
   'redline.treasury_30y': '30년물 국채금리',

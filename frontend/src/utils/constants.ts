@@ -9,7 +9,7 @@ export const REDLINES = {
   sp500: { value: -20, direction: 'below' as const, label: 'E-mini S&P 선물 고점대비 하락률', unit: '%' },
   vix: { value: 35, direction: 'above' as const, label: 'VIX 공포지수', unit: '' },
   treasury_10y: { value: 5.0, direction: 'above' as const, label: '10년물 국채금리', unit: '%' },
-  oil: { value: 120, direction: 'above' as const, label: '유가 (브렌트)', unit: '$/bbl' },
+  oil: { value: 120, direction: 'above' as const, label: '유가 (WTI)', unit: '$/bbl' },
   dollar_index: { value: 115, direction: 'above' as const, label: '달러 인덱스', unit: '' },
   gasoline: { value: 4.0, direction: 'above' as const, label: '전국 평균 휘발유', unit: '$/gal' },
   treasury_30y: { value: 5.5, direction: 'above' as const, label: '30년물 국채금리', unit: '%' },

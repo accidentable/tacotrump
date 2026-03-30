@@ -12,7 +12,7 @@ router = APIRouter()
 INDICATOR_LABELS = {
     "sp500": {"label": "S&P 500 (고점대비)", "unit": "%"},
     "treasury_10y": {"label": "10년물 국채금리", "unit": "%"},
-    "oil": {"label": "유가 (브렌트)", "unit": "$/bbl"},
+    "oil": {"label": "유가 (WTI)", "unit": "$/bbl"},
     "dollar_index": {"label": "달러 인덱스", "unit": ""},
     "gasoline": {"label": "전국 평균 휘발유", "unit": "$/gal"},
     "treasury_30y": {"label": "30년물 국채금리", "unit": "%"},
