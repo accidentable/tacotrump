@@ -41,6 +41,8 @@ export default function App() {
       <Header riskLevel={risk?.level ?? 1} />
 
       <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 py-6 space-y-6">
+        <NotificationCTA />
+
         {/* 업데이트 시각 */}
         <div className="flex items-center gap-1.5 text-xs text-text-muted">
           <Clock className="w-3.5 h-3.5" />
@@ -51,7 +53,6 @@ export default function App() {
         <IndicatorGrid indicators={core} loading={indLoading} />
         <ExtendedIndicators indicators={extended} />
         <ShareButton riskLevel={risk?.level ?? 1} />
-        <NotificationCTA />
         <HistoryTimeline history={history} loading={histLoading} currentScore={risk?.total_score} />
       </main>
 
