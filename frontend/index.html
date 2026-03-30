@@ -1,28 +1,65 @@
 <!doctype html>
-<html lang="ko">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#1B2A4A" />
-    <title>타코알리미 – Trump Always Chickens Out</title>
-    <meta name="description" content="트럼프가 또 꼬리 내릴 확률을 실시간으로 추적하는 타코(TACO) 지수. S&P 500, 국채금리, 유가, 달러 인덱스, 대통령 지지율 기반으로 트럼프 정책 번복 가능성을 분석합니다." />
+    <title>TACO Index – Will Trump Chicken Out? | 타코알리미</title>
+    <meta name="description" content="Real-time TACO Index tracking the probability of Trump policy reversals. Based on S&P 500, VIX, Treasury yields, oil prices, Dollar Index & approval ratings. 트럼프 정책 번복 가능성을 실시간 추적하는 타코 지수." />
+    <meta name="keywords" content="TACO Index, Trump, tariff, trade war, policy reversal, chicken out, S&P 500, VIX, Treasury yield, oil price, approval rating, 타코지수, 트럼프, 관세" />
     <link rel="canonical" href="https://tacotrump.space/" />
+
+    <!-- hreflang for i18n SEO -->
+    <link rel="alternate" hreflang="en" href="https://tacotrump.space/" />
+    <link rel="alternate" hreflang="ko" href="https://tacotrump.space/" />
+    <link rel="alternate" hreflang="x-default" href="https://tacotrump.space/" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="타코알리미 – Trump Always Chickens Out" />
-    <meta property="og:description" content="트럼프가 또 꼬리 내릴 확률을 실시간으로 추적하는 타코(TACO) 지수." />
+    <meta property="og:site_name" content="TACO Index" />
+    <meta property="og:title" content="TACO Index – Will Trump Chicken Out?" />
+    <meta property="og:description" content="Real-time dashboard tracking the probability of Trump policy reversals based on 6 key economic indicators." />
     <meta property="og:image" content="https://tacotrump.space/og.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="TACO Index Dashboard – Trump Always Chickens Out" />
     <meta property="og:url" content="https://tacotrump.space" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="ko_KR" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="타코알리미 – Trump Always Chickens Out" />
-    <meta name="twitter:description" content="트럼프가 또 꼬리 내릴 확률을 실시간으로 추적하는 타코(TACO) 지수." />
+    <meta name="twitter:title" content="TACO Index – Will Trump Chicken Out?" />
+    <meta name="twitter:description" content="Real-time dashboard tracking Trump policy reversal probability. S&P 500, VIX, yields, oil & more." />
     <meta name="twitter:image" content="https://tacotrump.space/og.png" />
+    <meta name="twitter:image:alt" content="TACO Index Dashboard" />
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "TACO Index",
+      "alternateName": "타코알리미",
+      "url": "https://tacotrump.space",
+      "description": "Real-time dashboard tracking the probability of Trump policy reversals (TACO: Trump Always Chickens Out) based on S&P 500, VIX, Treasury yields, oil prices, Dollar Index and presidential approval ratings.",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "inLanguage": ["en", "ko"],
+      "author": {
+        "@type": "Person",
+        "name": "findawesomething",
+        "url": "https://www.threads.com/@findawesomething"
+      }
+    }
+    </script>
+
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link
       href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
@@ -43,33 +80,33 @@
     <div id="root">
       <noscript>
         <header style="text-align:center;padding:2rem;font-family:sans-serif">
-          <h1>타코알리미 – TACO Index</h1>
-          <p>Trump Always Chickens Out</p>
+          <h1>TACO Index – Trump Always Chickens Out</h1>
+          <p>Real-time dashboard tracking Trump policy reversal probability | 타코알리미</p>
         </header>
         <main style="max-width:700px;margin:0 auto;padding:1rem;font-family:sans-serif;line-height:1.8">
-          <h2>타코(TACO) 지수란?</h2>
-          <p>TACO 지수는 트럼프 행정부의 정책 번복 가능성을 실시간으로 추적하는 대시보드입니다. S&amp;P 500, VIX 공포지수, 10년물 국채금리, 국제유가, 달러 인덱스, 대통령 지지율 등 6가지 핵심 경제 지표를 기반으로 시장 압박 수준을 분석합니다.</p>
+          <h2>What is the TACO Index?</h2>
+          <p>The TACO Index (Trump Always Chickens Out) is a real-time dashboard that tracks the probability of Trump administration policy reversals. It analyzes market pressure levels based on 6 key economic indicators: S&amp;P 500, VIX Fear Index, 10-Year Treasury Yield, Oil Prices, Dollar Index, and Presidential Approval Rating.</p>
 
-          <h2>지표 설명</h2>
+          <h2>Indicators</h2>
           <ul>
-            <li><strong>S&amp;P 500</strong> – 미국 대형주 500개 종목의 시가총액 가중 지수. 하락 시 시장 불안 신호.</li>
-            <li><strong>VIX 공포지수</strong> – S&amp;P 500 옵션 변동성 기반 지수. 상승 시 투자자 공포 증가.</li>
-            <li><strong>10년물 국채금리</strong> – 미국 정부 장기 차입 비용. 급등 시 재정 부담 가중.</li>
-            <li><strong>국제유가 (WTI)</strong> – 서부 텍사스산 원유 가격. 급등 시 인플레이션 압력.</li>
-            <li><strong>달러 인덱스 (DXY)</strong> – 주요 6개 통화 대비 달러 가치. 급락 시 달러 신뢰 하락.</li>
-            <li><strong>대통령 지지율</strong> – RealClearPolitics 기반 여론조사 평균. 하락 시 정치적 압박 증가.</li>
+            <li><strong>S&amp;P 500</strong> – Market-cap weighted index of 500 large U.S. companies. Decline signals market instability.</li>
+            <li><strong>VIX Fear Index</strong> – S&amp;P 500 options volatility index. Rising VIX indicates growing investor fear.</li>
+            <li><strong>10Y Treasury Yield</strong> – U.S. government long-term borrowing cost. Surges add fiscal pressure.</li>
+            <li><strong>Oil (WTI)</strong> – West Texas Intermediate crude price. Spikes drive inflationary pressure.</li>
+            <li><strong>Dollar Index (DXY)</strong> – Dollar value against 6 major currencies. Sharp drops signal loss of confidence.</li>
+            <li><strong>Presidential Approval</strong> – RealClearPolitics polling average. Decline increases political pressure.</li>
           </ul>
 
-          <h2>위험 단계</h2>
+          <h2>Risk Levels</h2>
           <ul>
-            <li><strong>Lv.1 안전</strong> – 시장 안정, 정책 유지 가능성 높음</li>
-            <li><strong>Lv.2 주의</strong> – 일부 지표 악화, 모니터링 필요</li>
-            <li><strong>Lv.3 경고</strong> – 다수 지표 악화, 정책 변경 가능성 상승</li>
-            <li><strong>Lv.4 위험</strong> – 시장 전반 압박, 정책 번복 가능성 매우 높음</li>
+            <li><strong>Lv.1 Safe</strong> – Market stable, policy likely to hold</li>
+            <li><strong>Lv.2 Caution</strong> – Some indicators deteriorating, monitoring needed</li>
+            <li><strong>Lv.3 Warning</strong> – Multiple indicators worsening, policy change probability rising</li>
+            <li><strong>Lv.4 Danger</strong> – Broad market pressure, policy reversal highly likely</li>
           </ul>
 
-          <h2>면책 조항</h2>
-          <p>본 대시보드는 교육 및 정보 제공 목적으로만 제작되었으며, 투자 조언이나 정치적 예측을 구성하지 않습니다. 표시된 데이터와 점수는 공개된 시장 데이터를 기반으로 자동 산출된 것이며, 정확성이나 완전성을 보장하지 않습니다.</p>
+          <h2>Disclaimer</h2>
+          <p>This dashboard is for educational and informational purposes only and does not constitute investment advice or political prediction. Displayed data and scores are automatically calculated from publicly available market data, and accuracy or completeness is not guaranteed.</p>
 
           <footer style="margin-top:2rem;padding-top:1rem;border-top:1px solid #ccc;text-align:center">
             <p>&copy; 2026 tacotrump. Created by @findawesomething</p>
