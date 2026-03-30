@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Bell, X } from 'lucide-react';
+import { useI18n } from '../i18n';
 
 const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || '';
 
@@ -23,6 +24,7 @@ function isStandalone() {
 }
 
 export default function NotificationCTA() {
+  const { t } = useI18n();
   const [dismissed, setDismissed] = useState(() =>
     localStorage.getItem('push_enabled') === 'true' ||
     localStorage.getItem('noti_cta_dismissed') === 'true'
@@ -74,11 +76,10 @@ export default function NotificationCTA() {
     setDismissed(true);
   };
 
-  // 푸시 미지원 환경 안내 메시지
   const guideMessage = isIOS() && !isStandalone()
-    ? '아이폰: Safari 하단 공유(⬆) → "홈 화면에 추가" → 앱에서 알림 켜기'
+    ? t('noti.guideIOS')
     : !pushSupported
-      ? 'Chrome 브라우저에서 접속하면 알림을 받을 수 있어요.'
+      ? t('noti.guideChrome')
       : '';
 
   return (
@@ -86,7 +87,7 @@ export default function NotificationCTA() {
       <button
         onClick={handleDismiss}
         className="absolute top-2 right-2 p-1 rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-card-hover transition-colors"
-        aria-label="닫기"
+        aria-label={t('noti.close')}
       >
         <X className="w-3.5 h-3.5" />
       </button>
@@ -97,12 +98,12 @@ export default function NotificationCTA() {
 
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-text-primary">
-          {done ? '알림 설정 완료!' : '타코 레벨 변경 알림 받기'}
+          {done ? t('noti.doneTitle') : t('noti.title')}
         </p>
         <p className="text-xs text-text-muted mt-0.5">
           {done
-            ? '위험 레벨이 바뀌면 알려드릴게요.'
-            : guideMessage || 'TACO 지수가 급변하면 즉시 알림을 보내드려요.'}
+            ? t('noti.doneDesc')
+            : guideMessage || t('noti.desc')}
         </p>
       </div>
 
@@ -112,7 +113,7 @@ export default function NotificationCTA() {
           disabled={loading}
           className="shrink-0 px-4 py-2 bg-accent hover:bg-accent/90 text-white text-sm font-medium rounded-xl transition-colors disabled:opacity-50"
         >
-          {loading ? '...' : '켜기'}
+          {loading ? '...' : t('noti.enable')}
         </button>
       )}
     </div>

@@ -1,4 +1,5 @@
 import { getGaugeColor } from '../utils/riskCalculator';
+import { useI18n } from '../i18n';
 
 interface GaugeBarProps {
   percent: number;
@@ -9,6 +10,7 @@ interface GaugeBarProps {
 export default function GaugeBar({ percent, height = 6, showLabel = false }: GaugeBarProps) {
   const clampedPercent = Math.max(0, Math.min(100, percent));
   const color = getGaugeColor(clampedPercent);
+  const { t } = useI18n();
 
   return (
     <div className="w-full">
@@ -23,9 +25,9 @@ export default function GaugeBar({ percent, height = 6, showLabel = false }: Gau
       </div>
       {showLabel && (
         <div className="flex justify-between mt-1 text-[10px] text-text-muted">
-          <span>안전</span>
+          <span>{t('gauge.safe')}</span>
           <span style={{ color }}>{clampedPercent.toFixed(0)}%</span>
-          <span>레드라인</span>
+          <span>{t('gauge.redline')}</span>
         </div>
       )}
     </div>

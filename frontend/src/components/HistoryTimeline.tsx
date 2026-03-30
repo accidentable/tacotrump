@@ -11,6 +11,7 @@ import {
 } from 'recharts';
 import type { HistoryEntry } from '../utils/riskCalculator';
 import { RISK_LEVELS } from '../utils/constants';
+import { useI18n } from '../i18n';
 
 function useDarkMode() {
   return useSyncExternalStore(
@@ -57,12 +58,13 @@ interface HistoryTimelineProps {
 export default function HistoryTimeline({ history, loading, currentScore }: HistoryTimelineProps) {
   const isDark = useDarkMode();
   const c = isDark ? COLORS.dark : COLORS.light;
+  const { t } = useI18n();
 
   if (loading) {
     return (
       <section>
         <h2 className="text-lg font-bold text-text-primary mb-4">
-          위험도 추이
+          {t('history.title')}
         </h2>
         <div className="toss-card p-5 animate-pulse">
           <div className="h-64 bg-bg-card-hover rounded-xl" />
@@ -77,21 +79,20 @@ export default function HistoryTimeline({ history, loading, currentScore }: Hist
     score: entry.total_score,
   }));
 
-  // 현재 라이브 타코지수를 "지금"으로 추가
   if (currentScore != null) {
-    chartData.push({ time: '지금', score: currentScore } as typeof chartData[number]);
+    chartData.push({ time: t('history.now'), score: currentScore } as typeof chartData[number]);
   }
 
   return (
     <section>
       <h2 className="text-lg font-bold text-text-primary mb-4">
-        위험도 추이
+        {t('history.title')}
       </h2>
 
       <div className="toss-card p-5">
         {chartData.length === 0 ? (
           <div className="h-64 flex items-center justify-center text-text-muted text-sm">
-            데이터 수집 중...
+            {t('history.loading')}
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={280}>
@@ -124,7 +125,7 @@ export default function HistoryTimeline({ history, loading, currentScore }: Hist
                   boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
                 }}
                 labelStyle={{ color: c.tooltipLabel, fontWeight: 500 }}
-                formatter={(value) => [Number(value).toFixed(2), '종합 점수']}
+                formatter={(value) => [Number(value).toFixed(2), t('history.totalScore')]}
               />
               <ReferenceLine y={1.8} stroke={RISK_LEVELS[2].color} strokeDasharray="5 5" strokeOpacity={0.4} />
               <ReferenceLine y={3.0} stroke={RISK_LEVELS[3].color} strokeDasharray="5 5" strokeOpacity={0.4} />

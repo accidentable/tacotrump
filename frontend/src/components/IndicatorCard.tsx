@@ -3,19 +3,12 @@ import { TrendingUp, TrendingDown, Minus, Landmark, Fuel, DollarSign, Users, Bar
 
 import type { IndicatorData } from '../utils/riskCalculator';
 import { calculateGaugePercent, getGaugeColor } from '../utils/riskCalculator';
-import { INDICATOR_DESCRIPTIONS } from '../utils/indicatorDescriptions';
 import GaugeBar from './GaugeBar';
+import { useI18n } from '../i18n';
 
 interface IndicatorCardProps {
   indicator: IndicatorData;
 }
-
-// 한국시간 기준 업데이트 시간 안내
-const MARKET_HOURS: Record<string, string> = {
-  sp500: '업데이트: 일~금 거의 23시간 (E-mini 선물)',
-  treasury_10y: '업데이트: 월~금 22:00 ~ 07:00 (한국시간)',
-  vix: '업데이트: 월~금 22:30 ~ 05:00 (한국시간)',
-};
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   sp500: BarChart3,
@@ -29,12 +22,20 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   approval_rating: Users,
 };
 
+const DESC_KEYS = ['sp500', 'vix', 'treasury_10y', 'oil', 'dollar_index', 'approval_rating', 'gasoline', 'treasury_30y', 'russell2000'];
+
 export default function IndicatorCard({ indicator }: IndicatorCardProps) {
-  const { key, label, value, change, unit, redline, redline_direction, score } = indicator;
+  const { key, value, change, unit, redline, redline_direction, score } = indicator;
   const [showDetail, setShowDetail] = useState(false);
+  const { t } = useI18n();
 
   const Icon = ICON_MAP[key] || BarChart3;
-  const desc = INDICATOR_DESCRIPTIONS[key];
+  const hasDesc = DESC_KEYS.includes(key);
+
+  const label = t(`redline.${key}`);
+  const marketHoursKey = `market.${key}`;
+  const marketHours = t(marketHoursKey);
+  const hasMarketHours = marketHours !== marketHoursKey;
 
   const isPositive = (change ?? 0) > 0;
   const isNegative = (change ?? 0) < 0;
@@ -59,11 +60,11 @@ export default function IndicatorCard({ indicator }: IndicatorCardProps) {
         <div className="flex items-center gap-2">
           <Icon className="w-4 h-4 text-accent" />
           <span className="text-sm text-text-secondary font-medium">{label}</span>
-          {gaugePercent >= 85 && <span title="레드라인 임박">🔴</span>}
-          {gaugePercent >= 66 && gaugePercent < 85 && <span title="경고 수준">🟠</span>}
+          {gaugePercent >= 85 && <span title={t('indicator.redlineNear')}>🔴</span>}
+          {gaugePercent >= 66 && gaugePercent < 85 && <span title={t('indicator.warningLevel')}>🟠</span>}
         </div>
-        {MARKET_HOURS[key] && (
-          <p className="text-[10px] text-text-muted mt-1 ml-6">{MARKET_HOURS[key]}</p>
+        {hasMarketHours && (
+          <p className="text-[10px] text-text-muted mt-1 ml-6">{marketHours}</p>
         )}
       </div>
 
@@ -86,7 +87,7 @@ export default function IndicatorCard({ indicator }: IndicatorCardProps) {
       {/* Gauge */}
       <div>
         <div className="flex justify-between text-[11px] text-text-muted mb-1.5">
-          <span>타코 게이지</span>
+          <span>{t('indicator.tacoGauge')}</span>
           <span className="font-medium" style={{ color: gaugeColor }}>
             {gaugePercent.toFixed(0)}%
           </span>
@@ -94,19 +95,19 @@ export default function IndicatorCard({ indicator }: IndicatorCardProps) {
         <GaugeBar percent={gaugePercent} height={6} />
         <div className="text-right mt-1">
           <span className="text-[10px] text-text-muted">
-            레드라인: {redline != null ? `${redline}${unit}` : '-'}
+            {t('indicator.redlineLabel')}: {redline != null ? `${redline}${unit}` : '-'}
           </span>
         </div>
       </div>
 
-      {/* 더 알아보기 — Toss-style */}
-      {desc && (
+      {/* Learn more */}
+      {hasDesc && (
         <div className="mt-3 pt-3 border-t border-border">
           <button
             onClick={() => setShowDetail(!showDetail)}
             className="flex items-center gap-1 text-xs text-text-muted hover:text-accent transition-colors"
           >
-            <span>더 알아보기</span>
+            <span>{t('indicator.learnMore')}</span>
             <ChevronDown
               className={`w-3 h-3 transition-transform duration-200 ${showDetail ? 'rotate-180' : ''}`}
             />
@@ -119,26 +120,23 @@ export default function IndicatorCard({ indicator }: IndicatorCardProps) {
           >
             <div className="overflow-hidden">
               <div className="bg-bg-card-hover rounded-xl px-3 py-3 space-y-2.5">
-                {/* 한 줄 설명 */}
                 <p className="text-xs text-text-secondary leading-relaxed">
-                  {desc.summary}
+                  {t(`desc.${key}.summary`)}
                 </p>
 
-                {/* 왜 중요해요 */}
                 <div>
                   <span className="text-[10px] font-semibold text-accent">
-                    왜 중요해요?
+                    {t('indicator.whyImportant')}
                   </span>
                   <p className="text-xs text-text-secondary leading-relaxed mt-0.5">
-                    {desc.why}
+                    {t(`desc.${key}.why`)}
                   </p>
                 </div>
 
-                {/* 위험 구간 */}
                 <div className="flex items-start gap-1.5">
                   <span className="text-[10px] mt-px">⚠️</span>
                   <p className="text-[11px] text-text-muted leading-relaxed">
-                    {desc.danger}
+                    {t(`desc.${key}.danger`)}
                   </p>
                 </div>
               </div>

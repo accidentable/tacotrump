@@ -3,6 +3,7 @@ import { HelpCircle, X } from 'lucide-react';
 import type { RiskData } from '../utils/riskCalculator';
 import GaugeBar from './GaugeBar';
 import { RISK_LEVELS } from '../utils/constants';
+import { useI18n } from '../i18n';
 
 interface RiskCardProps {
   risk: RiskData | null;
@@ -18,18 +19,15 @@ const ALL_IMAGES = [
   '/print6.png', '/print7.png', '/print8.png', '/print9.png', '/print10.png',
 ];
 
-const LEVEL_INFO = [
-  { lv: 1, label: '안전', color: '#3CD5AF', range: '0.0 – 1.7', desc: '시장 안정. 트럼프 자신감 충전 중. 강경 기조 유지 확률 높음.' },
-  { lv: 2, label: '주의', color: '#FFC84C', range: '1.8 – 2.9', desc: '시장이 흔들리기 시작. 추가 에스컬레이션 가능성.' },
-  { lv: 3, label: '경고', color: '#F58737', range: '3.0 – 4.1', desc: '시장 압박 거세지는 중. 슬슬 물러날 준비.' },
-  { lv: 4, label: '위험', color: '#F04452', range: '4.2 – 6.0', desc: '시장 패닉. 트럼프 후퇴(타코) 임박.' },
-];
+const LEVEL_COLORS = ['#3CD5AF', '#FFC84C', '#F58737', '#F04452'];
+const LEVEL_RANGES = ['0.0 – 1.7', '1.8 – 2.9', '3.0 – 4.1', '4.2 – 6.0'];
 
 function pickRandom(arr: string[]): string {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
 export default function RiskCard({ risk, loading }: RiskCardProps) {
+  const { t } = useI18n();
   const [imgSrc, setImgSrc] = useState('');
   const [showHelp, setShowHelp] = useState(false);
 
@@ -48,13 +46,12 @@ export default function RiskCard({ risk, loading }: RiskCardProps) {
 
   const level = RISK_LEVELS[risk.level as keyof typeof RISK_LEVELS] || RISK_LEVELS[1];
   const gaugePercent = (risk.total_score / risk.max_score) * 100;
+  const riskLabel = t(`risk.level${risk.level}.label` as 'risk.level1.label');
 
   return (
     <div className="toss-card max-w-sm mx-auto relative overflow-hidden">
-      {/* 상단 색상 바 */}
       <div className="h-1.5" style={{ backgroundColor: level.color }} />
 
-      {/* 정보 영역 */}
       <div className="p-5">
         <div className="flex items-baseline justify-between mb-4">
           <div className="flex items-center gap-2">
@@ -62,7 +59,7 @@ export default function RiskCard({ risk, loading }: RiskCardProps) {
               Lv.{risk.level}
             </span>
             <span className="text-lg font-semibold" style={{ color: level.color }}>
-              {level.label}
+              {riskLabel}
             </span>
             <div className="relative">
               <button
@@ -72,31 +69,34 @@ export default function RiskCard({ risk, loading }: RiskCardProps) {
                 <HelpCircle className="w-4 h-4" />
               </button>
 
-              {/* 풍선 팝오버 */}
               {showHelp && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setShowHelp(false)} />
                   <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-80 toss-card p-4 animate-in">
                     <div className="flex items-center justify-between mb-3">
-                      <span className="text-sm font-bold text-text-primary">레벨 기준</span>
+                      <span className="text-sm font-bold text-text-primary">{t('risk.helpTitle')}</span>
                       <button onClick={() => setShowHelp(false)} className="text-text-muted hover:text-text-primary">
                         <X className="w-4 h-4" />
                       </button>
                     </div>
                     <div className="space-y-2.5">
-                      {LEVEL_INFO.map(info => (
+                      {[1, 2, 3, 4].map(lv => (
                         <div
-                          key={info.lv}
+                          key={lv}
                           className="flex gap-3 items-start text-xs"
-                          style={{ opacity: info.lv === risk.level ? 1 : 0.5 }}
+                          style={{ opacity: lv === risk.level ? 1 : 0.5 }}
                         >
                           <div className="shrink-0 w-20">
-                            <span className="font-bold" style={{ color: info.color }}>
-                              Lv.{info.lv} {info.label}
+                            <span className="font-bold" style={{ color: LEVEL_COLORS[lv - 1] }}>
+                              Lv.{lv} {t(`risk.level${lv}.label` as 'risk.level1.label')}
                             </span>
-                            <span className="block text-[10px] text-text-muted mt-0.5">{info.range}점</span>
+                            <span className="block text-[10px] text-text-muted mt-0.5">
+                              {LEVEL_RANGES[lv - 1]}{t('risk.scoreUnit')}
+                            </span>
                           </div>
-                          <span className="text-text-secondary leading-relaxed">{info.desc}</span>
+                          <span className="text-text-secondary leading-relaxed">
+                            {t(`risk.level${lv}.desc` as 'risk.level1.desc')}
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -117,11 +117,10 @@ export default function RiskCard({ risk, loading }: RiskCardProps) {
         </p>
       </div>
 
-      {/* 이미지 */}
       <div style={{ backgroundColor: level.bg }}>
         <img
           src={imgSrc}
-          alt={`타코 위험도 레벨 ${risk.level} - ${level.label}`}
+          alt={t('risk.imgAlt', { level: risk.level, label: riskLabel })}
           loading="lazy"
           decoding="async"
           className="w-full object-cover"

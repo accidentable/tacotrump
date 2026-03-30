@@ -1,17 +1,17 @@
 import { Eye } from 'lucide-react';
 import { usePageViews } from '../hooks/usePageViews';
+import { useI18n } from '../i18n';
 
 export default function Footer() {
   const views = usePageViews();
+  const { t } = useI18n();
 
   return (
     <footer className="mt-auto bg-bg-card border-t border-border">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-5">
         <p className="text-[11px] leading-relaxed max-w-3xl text-text-muted">
-          <span className="text-text-secondary font-medium">면책사항</span>{' '}
-          본 대시보드는 교육 및 정보 제공 목적으로만 제작되었으며, 투자 조언이나 정치적 예측을
-          구성하지 않습니다. 표시된 데이터와 점수는 공개된 시장 데이터를 기반으로 자동 산출된
-          것이며, 정확성이나 완전성을 보장하지 않습니다.
+          <span className="text-text-secondary font-medium">{t('footer.disclaimer')}</span>{' '}
+          {t('footer.disclaimerText')}
         </p>
         <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
           <span className="text-[10px] text-text-muted">

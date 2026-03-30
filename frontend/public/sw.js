@@ -10,9 +10,14 @@ self.addEventListener('push', (event) => {
     // use defaults
   }
 
+  // Bilingual payload support: pick language based on browser
+  const lang = (navigator.language || '').startsWith('ko') ? 'ko' : 'en';
+  const title = (data.title && typeof data.title === 'object') ? (data.title[lang] || data.title.ko || '') : (data.title || '');
+  const body = (data.body && typeof data.body === 'object') ? (data.body[lang] || data.body.ko || '') : (data.body || '');
+
   event.waitUntil(
-    self.registration.showNotification(data.title, {
-      body: data.body,
+    self.registration.showNotification(title, {
+      body: body,
       icon: '/taco-192.png',
       badge: '/taco-192.png',
       data: { url: 'https://tacotrump.space' },

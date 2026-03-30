@@ -1,26 +1,34 @@
 import type { TruthPost } from '../hooks/useTruths';
+import { useI18n } from '../i18n';
 
 interface TruthFeedProps {
   posts: TruthPost[];
   loading: boolean;
 }
 
-function timeAgo(dateStr: string): string {
-  try {
-    const diff = Date.now() - new Date(dateStr).getTime();
-    const mins = Math.floor(diff / 60000);
-    if (mins < 1) return '방금 전';
-    if (mins < 60) return `${mins}분 전`;
-    const hours = Math.floor(mins / 60);
-    if (hours < 24) return `${hours}시간 전`;
-    const days = Math.floor(hours / 24);
-    return `${days}일 전`;
-  } catch {
-    return '';
-  }
+function useTimeAgo() {
+  const { t } = useI18n();
+
+  return (dateStr: string): string => {
+    try {
+      const diff = Date.now() - new Date(dateStr).getTime();
+      const mins = Math.floor(diff / 60000);
+      if (mins < 1) return t('time.justNow');
+      if (mins < 60) return t('time.minutesAgo', { n: mins });
+      const hours = Math.floor(mins / 60);
+      if (hours < 24) return t('time.hoursAgo', { n: hours });
+      const days = Math.floor(hours / 24);
+      return t('time.daysAgo', { n: days });
+    } catch {
+      return '';
+    }
+  };
 }
 
 export default function TruthFeed({ posts, loading }: TruthFeedProps) {
+  const { t } = useI18n();
+  const timeAgo = useTimeAgo();
+
   if (loading) {
     return (
       <section>
@@ -47,7 +55,7 @@ export default function TruthFeed({ posts, loading }: TruthFeedProps) {
       <div className="toss-card h-[400px] overflow-y-auto overflow-x-hidden">
         {posts.length === 0 ? (
           <div className="p-5 text-center text-text-muted text-sm">
-            데이터를 불러올 수 없습니다
+            {t('truth.noData')}
           </div>
         ) : (
           posts.map((post, i) => (

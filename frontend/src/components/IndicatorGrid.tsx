@@ -1,5 +1,6 @@
 import type { IndicatorData } from '../utils/riskCalculator';
 import IndicatorCard from './IndicatorCard';
+import { useI18n } from '../i18n';
 
 interface IndicatorGridProps {
   indicators: IndicatorData[];
@@ -7,11 +8,13 @@ interface IndicatorGridProps {
 }
 
 export default function IndicatorGrid({ indicators, loading }: IndicatorGridProps) {
+  const { t } = useI18n();
+
   if (loading) {
     return (
       <section>
         <h2 className="text-lg font-bold text-text-primary mb-4">
-          핵심 지표
+          {t('section.coreIndicators')}
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {[1, 2, 3, 4].map(i => (
@@ -27,7 +30,7 @@ export default function IndicatorGrid({ indicators, loading }: IndicatorGridProp
   return (
     <section>
       <h2 className="text-lg font-bold text-text-primary mb-4">
-        핵심 지표
+        {t('section.coreIndicators')}
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {indicators.map(ind => (

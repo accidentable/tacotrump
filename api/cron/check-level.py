@@ -20,7 +20,12 @@ CRON_SECRET = os.environ.get("CRON_SECRET", "")
 PUSH_SUBS_KEY = "push_subs"
 LAST_LEVEL_KEY = "push_last_level"
 
-LEVEL_LABELS = {1: "안전", 2: "주의", 3: "경고", 4: "위험"}
+LEVEL_LABELS = {
+    1: {"ko": "안전", "en": "Safe"},
+    2: {"ko": "주의", "en": "Caution"},
+    3: {"ko": "경고", "en": "Warning"},
+    4: {"ko": "위험", "en": "Danger"},
+}
 
 
 def get_redis():
@@ -73,9 +78,16 @@ class handler(BaseHTTPRequestHandler):
             sent = 0
             if prev_level is not None and current_level != prev_level:
                 subs = r.smembers(PUSH_SUBS_KEY) or set()
+                label = LEVEL_LABELS.get(current_level, {"ko": "", "en": ""})
                 payload = {
-                    "title": f"타코 레벨 변경! Lv.{current_level} {LEVEL_LABELS.get(current_level, '')}",
-                    "body": f"Lv.{prev_level} → Lv.{current_level} 으로 변경되었습니다.",
+                    "title": {
+                        "ko": f"타코 레벨 변경! Lv.{current_level} {label['ko']}",
+                        "en": f"TACO Level Changed! Lv.{current_level} {label['en']}",
+                    },
+                    "body": {
+                        "ko": f"Lv.{prev_level} → Lv.{current_level} 으로 변경되었습니다.",
+                        "en": f"Changed from Lv.{prev_level} to Lv.{current_level}.",
+                    },
                 }
 
                 expired = []

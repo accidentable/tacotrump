@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Sun, Moon, Bell, BellOff } from 'lucide-react';
+import { Sun, Moon, Bell, BellOff, Globe } from 'lucide-react';
 import { RISK_LEVELS } from '../utils/constants';
+import { useI18n } from '../i18n';
 
 const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || '';
 
@@ -28,6 +29,7 @@ interface HeaderProps {
 }
 
 export default function Header({ riskLevel }: HeaderProps) {
+  const { t, locale, setLocale } = useI18n();
   const level = RISK_LEVELS[riskLevel as keyof typeof RISK_LEVELS] || RISK_LEVELS[1];
   const [isDark, setIsDark] = useState(() =>
     document.documentElement.classList.contains('dark')
@@ -51,7 +53,6 @@ export default function Header({ riskLevel }: HeaderProps) {
   const pushFullySupported = 'serviceWorker' in navigator && 'PushManager' in window && !!VAPID_PUBLIC_KEY;
 
   const handlePushToggle = async () => {
-    // 미지원 환경 → 안내
     if (!pushFullySupported) {
       setShowPushGuide(true);
       return;
@@ -104,8 +105,10 @@ export default function Header({ riskLevel }: HeaderProps) {
   };
 
   const guideMessage = isIOS() && !isStandalone()
-    ? '아이폰에서 알림을 받으려면\n"홈 화면에 추가" 후 앱에서 다시 눌러주세요.'
-    : '이 브라우저에서는 푸시 알림이 지원되지 않습니다.\nChrome 또는 홈 화면에 추가 후 이용해주세요.';
+    ? t('header.pushGuideIOS')
+    : t('header.pushGuideDefault');
+
+  const riskLabel = t(`risk.level${riskLevel}.label` as 'risk.level1.label');
 
   return (
     <>
@@ -130,12 +133,19 @@ export default function Header({ riskLevel }: HeaderProps) {
                   color: level.color,
                 }}
               >
-                Lv.{riskLevel} {level.label}
+                Lv.{riskLevel} {riskLabel}
               </div>
+              <button
+                onClick={() => setLocale(locale === 'ko' ? 'en' : 'ko')}
+                className="p-1.5 rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-card-hover transition-colors"
+                aria-label={t('header.langToggle')}
+              >
+                <Globe className="w-4 h-4" />
+              </button>
               <button
                 onClick={() => setIsDark(!isDark)}
                 className="p-1.5 rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-card-hover transition-colors"
-                aria-label={isDark ? '라이트 모드로 전환' : '다크 모드로 전환'}
+                aria-label={isDark ? t('header.lightMode') : t('header.darkMode')}
               >
                 {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
               </button>
@@ -143,7 +153,7 @@ export default function Header({ riskLevel }: HeaderProps) {
                 onClick={handlePushToggle}
                 disabled={pushLoading}
                 className="p-1.5 rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-card-hover transition-colors disabled:opacity-50"
-                aria-label={pushEnabled ? '알림 해제' : '알림 켜기'}
+                aria-label={pushEnabled ? t('header.pushOff') : t('header.pushOn')}
               >
                 {pushEnabled
                   ? <Bell className="w-4 h-4" />
@@ -154,7 +164,6 @@ export default function Header({ riskLevel }: HeaderProps) {
         </div>
       </header>
 
-      {/* 푸시 미지원 안내 토스트 */}
       {showPushGuide && (
         <>
           <div className="fixed inset-0 z-40 bg-black/30" onClick={() => setShowPushGuide(false)} />
@@ -167,7 +176,7 @@ export default function Header({ riskLevel }: HeaderProps) {
               onClick={() => setShowPushGuide(false)}
               className="mt-4 w-full py-2.5 bg-accent hover:bg-accent/90 text-white text-sm font-medium rounded-xl transition-colors"
             >
-              확인
+              {t('header.confirm')}
             </button>
           </div>
         </>

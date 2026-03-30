@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import type { IndicatorData } from '../utils/riskCalculator';
 import IndicatorCard from './IndicatorCard';
+import { useI18n } from '../i18n';
 
 interface ExtendedIndicatorsProps {
   indicators: IndicatorData[];
@@ -9,6 +10,7 @@ interface ExtendedIndicatorsProps {
 
 export default function ExtendedIndicators({ indicators }: ExtendedIndicatorsProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const { t } = useI18n();
 
   if (indicators.length === 0) return null;
 
@@ -23,9 +25,9 @@ export default function ExtendedIndicators({ indicators }: ExtendedIndicatorsPro
         ) : (
           <ChevronRight className="w-5 h-5" />
         )}
-        확장 지표
+        {t('section.extendedIndicators')}
         <span className="text-sm font-normal text-text-muted ml-1">
-          {indicators.length}개
+          {t('section.countSuffix', { n: indicators.length })}
         </span>
       </button>
 
