@@ -1,0 +1,43 @@
+{
+  "name": "타코알리미 – TACO Index",
+  "short_name": "TACO",
+  "description": "트럼프 정책 번복 확률을 실시간 추적하는 TACO 지수 대시보드",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0E1116",
+  "theme_color": "#1B2A4A",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/taco-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/taco-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "위젯 뷰",
+      "short_name": "위젯",
+      "url": "/widget",
+      "icons": [
+        {
+          "src": "/favicon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ],
+  "categories": ["finance", "news"]
+}

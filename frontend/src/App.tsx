@@ -6,6 +6,7 @@ import RiskCard from './components/RiskCard';
 import IndicatorGrid from './components/IndicatorGrid';
 import ExtendedIndicators from './components/ExtendedIndicators';
 import ShareButton from './components/ShareButton';
+import WidgetGuide from './components/WidgetGuide';
 import HistoryTimeline from './components/HistoryTimeline';
 import Footer from './components/Footer';
 import { useIndicators, useRiskLevel, useHistory } from './hooks/useIndicators';
@@ -50,6 +51,7 @@ export default function App() {
         <IndicatorGrid indicators={core} loading={indLoading} />
         <ExtendedIndicators indicators={extended} />
         <ShareButton riskLevel={risk?.level ?? 1} />
+        <WidgetGuide />
         <HistoryTimeline history={history} loading={histLoading} currentScore={risk?.total_score} />
       </main>
 
