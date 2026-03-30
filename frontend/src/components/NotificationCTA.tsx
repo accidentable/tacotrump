@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Bell, X } from 'lucide-react';
 
 const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || '';
@@ -12,6 +12,16 @@ function urlBase64ToUint8Array(base64String: string) {
   return arr;
 }
 
+function isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+function isStandalone() {
+  return window.matchMedia('(display-mode: standalone)').matches
+    || ('standalone' in navigator && (navigator as unknown as { standalone: boolean }).standalone);
+}
+
 export default function NotificationCTA() {
   const [dismissed, setDismissed] = useState(() =>
     localStorage.getItem('push_enabled') === 'true' ||
@@ -22,20 +32,12 @@ export default function NotificationCTA() {
     localStorage.getItem('push_enabled') === 'true'
   );
 
-  // 푸시 미지원 환경에서는 표시하지 않음
-  const supported = 'serviceWorker' in navigator && 'PushManager' in window && !!VAPID_PUBLIC_KEY;
+  if (dismissed) return null;
 
-  useEffect(() => {
-    // 이미 구독 중이면 숨김
-    if (localStorage.getItem('push_enabled') === 'true') {
-      setDismissed(true);
-      setDone(true);
-    }
-  }, []);
-
-  if (!supported || dismissed) return null;
+  const pushSupported = 'serviceWorker' in navigator && 'PushManager' in window && !!VAPID_PUBLIC_KEY;
 
   const handleEnable = async () => {
+    if (!pushSupported) return;
     if (loading) return;
     setLoading(true);
     try {
@@ -72,6 +74,13 @@ export default function NotificationCTA() {
     setDismissed(true);
   };
 
+  // 푸시 미지원 환경 안내 메시지
+  const guideMessage = isIOS() && !isStandalone()
+    ? '아이폰: Safari 공유 버튼 → "홈 화면에 추가" 후 앱에서 알림을 켜세요.'
+    : !pushSupported
+      ? 'Chrome 브라우저에서 접속하면 알림을 받을 수 있어요.'
+      : '';
+
   return (
     <div className="relative toss-card p-4 flex items-center gap-4">
       <button
@@ -93,11 +102,11 @@ export default function NotificationCTA() {
         <p className="text-xs text-text-muted mt-0.5">
           {done
             ? '위험 레벨이 바뀌면 알려드릴게요.'
-            : 'TACO 지수가 급변하면 즉시 알림을 보내드려요.'}
+            : guideMessage || 'TACO 지수가 급변하면 즉시 알림을 보내드려요.'}
         </p>
       </div>
 
-      {!done && (
+      {!done && pushSupported && (
         <button
           onClick={handleEnable}
           disabled={loading}
