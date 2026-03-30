@@ -76,7 +76,7 @@ export default function NotificationCTA() {
 
   // 푸시 미지원 환경 안내 메시지
   const guideMessage = isIOS() && !isStandalone()
-    ? '아이폰: Safari 공유 버튼 → "홈 화면에 추가" 후 앱에서 알림을 켜세요.'
+    ? '아이폰: Safari 하단 공유(⬆) → "홈 화면에 추가" → 앱에서 알림 켜기'
     : !pushSupported
       ? 'Chrome 브라우저에서 접속하면 알림을 받을 수 있어요.'
       : '';
