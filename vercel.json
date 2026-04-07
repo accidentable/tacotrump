@@ -3,7 +3,9 @@
   "outputDirectory": "frontend/dist",
   "framework": null,
   "functions": {
-    "api/truths.py": { "maxDuration": 60 }
+    "api/truths.py": { "maxDuration": 60 },
+    "api/v1/*.py": { "maxDuration": 30 },
+    "api/developer/*.py": { "maxDuration": 10 }
   },
   "rewrites": [
     { "source": "/api/:path*", "destination": "/api/:path*" }
