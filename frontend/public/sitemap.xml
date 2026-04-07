@@ -3,11 +3,35 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://tacotrump.space/</loc>
-    <lastmod>2026-03-30</lastmod>
+    <lastmod>2026-04-07</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://tacotrump.space/" />
     <xhtml:link rel="alternate" hreflang="ko" href="https://tacotrump.space/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://tacotrump.space/" />
+  </url>
+  <url>
+    <loc>https://tacotrump.space/#/about</loc>
+    <lastmod>2026-04-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://tacotrump.space/#/privacy</loc>
+    <lastmod>2026-04-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://tacotrump.space/#/terms</loc>
+    <lastmod>2026-04-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://tacotrump.space/#/developer</loc>
+    <lastmod>2026-04-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
 </urlset>

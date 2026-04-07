@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { Analytics } from '@vercel/analytics/react';
 import { Clock } from 'lucide-react';
 import Header from './components/Header';
@@ -9,6 +9,8 @@ import ShareButton from './components/ShareButton';
 import NotificationCTA from './components/NotificationCTA';
 import HistoryTimeline from './components/HistoryTimeline';
 import Footer from './components/Footer';
+import DeveloperPortal from './components/DeveloperPortal';
+import { AboutPage, PrivacyPage, TermsPage } from './components/LegalPage';
 import { useIndicators, useRiskLevel, useHistory } from './hooks/useIndicators';
 import { useWebSocket } from './hooks/useWebSocket';
 import { useI18n } from './i18n';
@@ -26,6 +28,26 @@ function formatTime(s: string, locale: string) {
 }
 
 export default function App() {
+  type Page = 'main' | 'developer' | 'about' | 'privacy' | 'terms';
+
+  const hashToPage = (hash: string): Page => {
+    const map: Record<string, Page> = {
+      '#/developer': 'developer',
+      '#/about': 'about',
+      '#/privacy': 'privacy',
+      '#/terms': 'terms',
+    };
+    return map[hash] || 'main';
+  };
+
+  const [page, setPage] = useState<Page>(() => hashToPage(window.location.hash));
+
+  useEffect(() => {
+    const onHash = () => setPage(hashToPage(window.location.hash));
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
+
   const { core, extended, updatedAt, loading: indLoading, refetch } = useIndicators();
   const { risk, loading: riskLoading, refetch: refetchRisk } = useRiskLevel();
   const { history, loading: histLoading } = useHistory(7);
@@ -37,6 +59,18 @@ export default function App() {
   }, [refetch, refetchRisk]);
 
   useWebSocket(handleWSMessage);
+
+  const goMain = () => { window.location.hash = ''; setPage('main'); };
+
+  if (page !== 'main') {
+    const SubPage = { developer: DeveloperPortal, about: AboutPage, privacy: PrivacyPage, terms: TermsPage }[page];
+    return (
+      <>
+        <SubPage onBack={goMain} />
+        <Analytics />
+      </>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-bg-primary">
