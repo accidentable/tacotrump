@@ -1,0 +1,187 @@
+"""공유 비즈니스 로직 — Yahoo Finance, 지지율, 스코어 엔진"""
+
+import asyncio
+import re
+import json
+import httpx
+
+# ── Yahoo Finance ──────────────────────────────────────────────
+
+TICKERS = {
+    "treasury_10y": "^TNX",
+    "sp500": "ES=F",
+    "vix": "^VIX",
+    "oil": "CL=F",
+    "dollar_index": "DX-Y.NYB",
+}
+
+HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+YAHOO_BASE = "https://query1.finance.yahoo.com/v8/finance/chart"
+
+
+async def _fetch_ticker(client, key, ticker):
+    try:
+        r = await client.get(f"{YAHOO_BASE}/{ticker}", params={"range": "5d", "interval": "1d"})
+        result = r.json()["chart"]["result"][0]
+        meta = result["meta"]
+        current = meta["regularMarketPrice"]
+        prev_close = meta.get("chartPreviousClose") or meta.get("previousClose") or current
+
+        if key == "sp500":
+            high_52w = meta.get("fiftyTwoWeekHigh", current)
+            pct = ((current - high_52w) / high_52w) * 100
+            prev_pct = ((prev_close - high_52w) / high_52w) * 100
+            return key, {"value": round(pct, 2), "raw_value": round(current, 2),
+                         "prev_value": round(prev_pct, 2), "high_52w": round(high_52w, 2)}
+        return key, {"value": round(current, 2), "prev_value": round(prev_close, 2)}
+    except Exception:
+        return key, None
+
+
+async def fetch_yahoo():
+    results = {}
+    async with httpx.AsyncClient(headers=HEADERS, timeout=8.0, follow_redirects=True) as client:
+        tasks = [_fetch_ticker(client, k, t) for k, t in TICKERS.items()]
+        for resp in await asyncio.gather(*tasks, return_exceptions=True):
+            if isinstance(resp, Exception):
+                continue
+            k, v = resp
+            if v:
+                results[k] = v
+    return results
+
+
+YAHOO_FALLBACK = {
+    "treasury_10y": {"value": 4.25, "prev_value": 4.22},
+    "sp500": {"value": -3.5, "raw_value": 5650.0, "prev_value": -3.2, "high_52w": 5856.0},
+    "vix": {"value": 18.0, "prev_value": 17.5},
+    "oil": {"value": 68.50, "prev_value": 69.10},
+    "dollar_index": {"value": 99.20, "prev_value": 99.05},
+}
+
+# ── Approval (RCP) ─────────────────────────────────────────────
+
+RCP_URL = "https://www.realclearpolling.com/polls/approval/donald-trump/approval-rating"
+
+
+async def fetch_approval():
+    try:
+        async with httpx.AsyncClient(timeout=8.0, follow_redirects=True) as client:
+            r = await client.get(RCP_URL, headers={"User-Agent": "Mozilla/5.0"})
+            if r.status_code != 200:
+                return {"value": 41.3, "prev_value": 41.3}
+            idx = r.text.find("rcp_average")
+            if idx < 0:
+                return {"value": 41.3, "prev_value": 41.3}
+            chunk = r.text[idx:idx + 500]
+            m = re.search(r'Approve[^}]*?value[\\\":\s]+([\d.]+)', chunk)
+            if m:
+                v = float(m.group(1))
+                return {"value": v, "prev_value": v}
+    except Exception:
+        pass
+    return {"value": 41.3, "prev_value": 41.3}
+
+# ── Score Engine ───────────────────────────────────────────────
+
+REDLINES = {
+    "sp500":          {"value": -15.0, "direction": "below", "safe": -3.0},
+    "vix":            {"value": 35.0,  "direction": "above", "safe": 15.0},
+    "treasury_10y":   {"value": 4.5,   "direction": "above", "safe": 4.0},
+    "oil":            {"value": 100.0, "direction": "above", "safe": 75.0},
+    "dollar_index":   {"value": 110.0, "direction": "above", "safe": 97.0},
+    "approval_rating":{"value": 35.0,  "direction": "below", "safe": 50.0},
+}
+
+CORE_KEYS = ["sp500", "vix", "treasury_10y", "oil", "dollar_index", "approval_rating"]
+
+INDICATOR_LABELS = {
+    "sp500": {"label": "E-mini S&P 선물 (고점대비)", "unit": "%"},
+    "vix": {"label": "VIX 공포지수", "unit": ""},
+    "treasury_10y": {"label": "10년물 국채금리", "unit": "%"},
+    "oil": {"label": "유가 (WTI)", "unit": "$/bbl"},
+    "dollar_index": {"label": "달러 인덱스", "unit": ""},
+    "approval_rating": {"label": "대통령 지지율", "unit": "%"},
+}
+
+
+def calc_indicator_score(key, value):
+    info = REDLINES.get(key)
+    if not info:
+        return 0.0
+    rl = info["value"]
+    d = info["direction"]
+    safe = info["safe"]
+
+    if d == "above":
+        if value <= safe: return 0.0
+        if value >= rl: return 1.0
+        return (value - safe) / (rl - safe)
+    else:
+        if rl < 0:
+            if value >= safe: return 0.0
+            if value <= rl: return 1.0
+            return (safe - value) / (safe - rl)
+        else:
+            if value >= safe: return 0.0
+            if value <= rl: return 1.0
+            return (safe - value) / (safe - rl)
+
+
+def calc_total(core_values):
+    s = 0.0
+    for k in CORE_KEYS:
+        if k in core_values:
+            s += calc_indicator_score(k, core_values[k])
+    return round(s, 2)
+
+
+def get_risk(score):
+    if score < 1.8:
+        return {"level": 1, "label": "안전", "color": "#3CD5AF",
+                "description": "시장 안정. 트럼프 자신감 충전 중. 강경 기조 유지 확률 높음."}
+    if score < 3.0:
+        return {"level": 2, "label": "주의", "color": "#FFC84C",
+                "description": "시장이 흔들리기 시작. 추가 에스컬레이션 가능성."}
+    if score < 4.2:
+        return {"level": 3, "label": "경고", "color": "#F58737",
+                "description": "시장 압박 거세지는 중. 슬슬 물러날 준비."}
+    return {"level": 4, "label": "위험", "color": "#F04452",
+            "description": "시장 패닉. 트럼프 후퇴(타코) 임박."}
+
+
+# ── 통합 fetch ─────────────────────────────────────────────────
+
+async def fetch_all():
+    yahoo, approval = await asyncio.gather(
+        fetch_yahoo(), fetch_approval(),
+    )
+    if not yahoo:
+        yahoo = YAHOO_FALLBACK
+
+    data = {**yahoo, "approval_rating": approval}
+
+    core_values = {k: data[k]["value"] for k in CORE_KEYS if k in data}
+    total = calc_total(core_values)
+    risk = get_risk(total)
+
+    return data, total, risk
+
+
+def build_indicator(key, data, is_core):
+    if key not in data:
+        return None
+    info = data[key]
+    meta = INDICATOR_LABELS.get(key, {"label": key, "unit": ""})
+    rl_info = REDLINES.get(key)
+    value = info["value"]
+    prev = info.get("prev_value", value)
+    change = round(value - prev, 4)
+    change_pct = round((change / abs(prev)) * 100, 2) if prev != 0 else 0.0
+    return {
+        "key": key, "label": meta["label"], "value": value, "prev_value": prev,
+        "change": change, "change_pct": change_pct, "unit": meta["unit"],
+        "redline": rl_info["value"] if rl_info else None,
+        "redline_direction": rl_info["direction"] if rl_info else "above",
+        "score": calc_indicator_score(key, value), "is_core": is_core,
+    }
